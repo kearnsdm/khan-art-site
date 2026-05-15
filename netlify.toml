@@ -4,11 +4,3 @@
 
 [build.environment]
   NODE_VERSION = "20"
-
-# Future apex/alias redirect.
-# Uncomment once nicholaskhan.com is registered and pointed at this site.
-# [[redirects]]
-#   from = "https://nicholaskhan.com/*"
-#   to = "https://nicholaskhanart.com/:splat"
-#   status = 301
-#   force = true
