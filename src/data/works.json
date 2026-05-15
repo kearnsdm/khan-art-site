@@ -1,0 +1,37 @@
+{
+  "works": [
+    {
+      "slug": "the-seven-sisters",
+      "title": "The Seven Sisters",
+      "year": 2025,
+      "section": "paintings-2025",
+      "featured": true,
+      "sourceFolder": "content/2025/2025.26_The Seven Sisters",
+      "primaryImage": "/works/the-seven-sisters/IMG_9955.jpg",
+      "primaryImageAlt": "The Seven Sisters painting",
+      "additionalImages": []
+    },
+    {
+      "slug": "weaver-st-oak-carrboro",
+      "title": "Weaver St. Oak, Carrboro",
+      "year": 2025,
+      "section": "paintings-2025",
+      "featured": true,
+      "sourceFolder": "content/2025/2025.20_Weaver St. Oak, Carrboro",
+      "primaryImage": "/works/weaver-st-oak-carrboro/IMG_9687.jpg",
+      "primaryImageAlt": "Weaver St. Oak, Carrboro painting",
+      "additionalImages": []
+    },
+    {
+      "slug": "raleigh-from-nc-state",
+      "title": "Raleigh From NC State",
+      "year": 2025,
+      "section": "paintings-2025",
+      "featured": true,
+      "sourceFolder": "content/2025/2025.15_Raleigh From NC State",
+      "primaryImage": "/works/raleigh-from-nc-state/Raleigh From NC State_Final 2.jpg",
+      "primaryImageAlt": "Raleigh From NC State painting",
+      "additionalImages": []
+    }
+  ]
+}

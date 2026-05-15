@@ -1,0 +1,12 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { sectionTitles } from "../data/sections";
+const title = sectionTitles.bio;
+---
+
+<Layout title={`${title} — Nicholas Hart Khan`} section="bio">
+  <h2 class="page-title">{title}</h2>
+  <div class="prose">
+    <p>Biography and CV content goes here.</p>
+  </div>
+</Layout>

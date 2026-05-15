@@ -1,0 +1,93 @@
+---
+import { navItems, type SectionId, type NavGroup } from "../data/sections";
+import { worksBySection } from "../data/works";
+
+interface Props {
+  currentSection?: SectionId | null;
+  currentWorkSlug?: string;
+}
+
+const { currentSection = null, currentWorkSlug } = Astro.props;
+
+function groupContainsCurrent(group: NavGroup, current: SectionId | null) {
+  return current ? group.children.some((c) => c.id === current) : false;
+}
+
+function worksFor(id: SectionId | "home") {
+  if (id === "home" || id === "bio" || id === "contact") return [];
+  return worksBySection(id);
+}
+---
+
+<nav class="side-nav" aria-label="Primary">
+  <ul>
+    {navItems.map((item) => {
+      if (item.kind === "link") {
+        const isCurrent = item.id === currentSection;
+        const sectionWorks = isCurrent ? worksFor(item.id) : [];
+        return (
+          <li class={isCurrent ? "current" : undefined}>
+            <a href={item.href} aria-current={isCurrent ? "page" : undefined} class="category">
+              {item.label}
+            </a>
+            {sectionWorks.length > 0 && (
+              <ul class="sub-nav">
+                {sectionWorks.map((w) => (
+                  <li>
+                    <a
+                      href={`/works/${w.slug}`}
+                      aria-current={w.slug === currentWorkSlug ? "true" : undefined}
+                    >
+                      {w.title}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
+        );
+      }
+
+      const containsCurrent = groupContainsCurrent(item, currentSection);
+      const isOpen = item.defaultOpen || containsCurrent;
+      return (
+        <li class={`group${containsCurrent ? " current" : ""}`}>
+          <details open={isOpen}>
+            <summary class="category group-label">{item.label}</summary>
+            <ul class="group-children">
+              {item.children.map((child) => {
+                const childIsCurrent = child.id === currentSection;
+                const sectionWorks = childIsCurrent ? worksFor(child.id) : [];
+                return (
+                  <li class={childIsCurrent ? "current" : undefined}>
+                    <a
+                      href={child.href}
+                      aria-current={childIsCurrent ? "page" : undefined}
+                      class="category subcategory"
+                    >
+                      {child.label}
+                    </a>
+                    {sectionWorks.length > 0 && (
+                      <ul class="sub-nav">
+                        {sectionWorks.map((w) => (
+                          <li>
+                            <a
+                              href={`/works/${w.slug}`}
+                              aria-current={w.slug === currentWorkSlug ? "true" : undefined}
+                            >
+                              {w.title}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </details>
+        </li>
+      );
+    })}
+  </ul>
+</nav>

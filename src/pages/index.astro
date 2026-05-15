@@ -1,0 +1,11 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Carousel from "../components/Carousel.astro";
+import { featuredWorks } from "../data/works";
+
+const featured = featuredWorks();
+---
+
+<Layout>
+  <Carousel works={featured} />
+</Layout>

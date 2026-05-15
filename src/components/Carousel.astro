@@ -1,0 +1,86 @@
+---
+import type { Work } from "../data/works";
+
+interface Props {
+  works: Work[];
+  autoplayMs?: number;
+}
+
+const { works, autoplayMs = 9000 } = Astro.props;
+---
+
+<div class="carousel" data-carousel data-autoplay={autoplayMs.toString()}>
+  <div class="slides">
+    {works.map((work, i) => (
+      <a
+        class={`slide${i === 0 ? " active" : ""}`}
+        href={`/works/${work.slug}`}
+        data-index={i.toString()}
+        data-title={work.title}
+        data-year={work.year.toString()}
+      >
+        <img src={work.primaryImage} alt={work.primaryImageAlt} loading={i === 0 ? "eager" : "lazy"} />
+      </a>
+    ))}
+    <div class="overlay">
+      <button type="button" data-prev aria-label="Previous">&larr;</button>
+      <button type="button" data-next aria-label="Next">&rarr;</button>
+      <span class="indicator" data-indicator>1 / {works.length}</span>
+    </div>
+  </div>
+  <div class="caption" data-caption>
+    {works[0]?.title}
+    <span class="year">{works[0]?.year}</span>
+  </div>
+</div>
+
+<script>
+  type Slide = HTMLAnchorElement;
+
+  function setupCarousel(root: HTMLElement) {
+    const slides = Array.from(root.querySelectorAll<Slide>(".slide"));
+    if (slides.length === 0) return;
+
+    const indicator = root.querySelector<HTMLElement>("[data-indicator]");
+    const caption = root.querySelector<HTMLElement>("[data-caption]");
+    const prev = root.querySelector<HTMLButtonElement>("[data-prev]");
+    const next = root.querySelector<HTMLButtonElement>("[data-next]");
+    const autoplayMs = parseInt(root.dataset.autoplay || "0", 10);
+
+    let index = 0;
+    let timer: number | undefined;
+
+    function render() {
+      slides.forEach((s, i) => s.classList.toggle("active", i === index));
+      if (indicator) indicator.textContent = `${index + 1} / ${slides.length}`;
+      if (caption) {
+        const slide = slides[index];
+        const title = slide?.dataset.title ?? "";
+        const year = slide?.dataset.year ?? "";
+        caption.innerHTML = `${title}<span class="year">${year}</span>`;
+      }
+    }
+
+    function go(delta: number) {
+      index = (index + delta + slides.length) % slides.length;
+      render();
+      restart();
+    }
+
+    function restart() {
+      if (timer) window.clearInterval(timer);
+      if (autoplayMs > 0 && slides.length > 1) {
+        timer = window.setInterval(() => go(1), autoplayMs);
+      }
+    }
+
+    prev?.addEventListener("click", (e) => { e.preventDefault(); go(-1); });
+    next?.addEventListener("click", (e) => { e.preventDefault(); go(1); });
+    root.addEventListener("mouseenter", () => { if (timer) window.clearInterval(timer); });
+    root.addEventListener("mouseleave", restart);
+
+    restart();
+  }
+
+  document.querySelectorAll<HTMLElement>("[data-carousel]").forEach(setupCarousel);
+</script>

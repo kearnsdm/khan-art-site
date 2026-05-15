@@ -1,0 +1,652 @@
+---
+export const prerender = false;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Your Works — picker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+    />
+    <style is:global>
+      :root {
+        --bg: #f1ebde;
+        --panel: #faf6ec;
+        --rule: #d6cfbe;
+        --text: #221f1a;
+        --muted: #6a6457;
+        --accent: #1a1a1a;
+        --danger: #8a2a2a;
+        --warn: #a85a14;
+        --thumb-size: 140px;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: "EB Garamond", Garamond, "Times New Roman", serif;
+        font-size: 17px;
+        line-height: 1.45;
+      }
+      header.admin-header {
+        position: sticky;
+        top: 0;
+        background: var(--bg);
+        border-bottom: 1px solid var(--rule);
+        padding: 0.85rem 1.5rem;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+      }
+      header.admin-header h1 {
+        margin: 0;
+        font-weight: 500;
+        font-variant-caps: small-caps;
+        letter-spacing: 0.02em;
+        font-size: 1.5rem;
+      }
+      header.admin-header .summary {
+        color: var(--muted);
+        font-style: italic;
+      }
+      header.admin-header .size-control {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.95rem;
+        color: var(--muted);
+      }
+      header.admin-header .size-control input[type="range"] {
+        width: 160px;
+      }
+      header.admin-header .actions { margin-left: auto; display: flex; gap: 0.75rem; align-items: center; }
+      button.primary {
+        font-family: inherit;
+        font-size: 1.05rem;
+        font-variant-caps: small-caps;
+        letter-spacing: 0.04em;
+        padding: 0.5rem 1.5rem;
+        background: var(--accent);
+        color: var(--bg);
+        border: none;
+        cursor: pointer;
+      }
+      button.primary:disabled { background: #888; cursor: not-allowed; }
+      button.secondary {
+        font-family: inherit;
+        font-size: 0.95rem;
+        background: transparent;
+        border: 1px solid var(--rule);
+        padding: 0.4rem 0.9rem;
+        cursor: pointer;
+      }
+      .status { font-style: italic; color: var(--muted); min-width: 12rem; }
+      .status.success { color: #2d6b2d; font-style: normal; font-weight: 500; }
+      .alert-banner {
+        background: #f6e3d8;
+        border: 1px solid var(--danger);
+        color: var(--danger);
+        padding: 0.85rem 1.25rem;
+        margin: 0 1.5rem 1rem;
+        font-weight: 500;
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+      }
+      .alert-banner.hidden { display: none; }
+      .alert-banner .close {
+        margin-left: auto;
+        cursor: pointer;
+        background: transparent;
+        border: none;
+        font-size: 1.4rem;
+        color: var(--danger);
+      }
+      main { padding: 1.5rem; }
+      .work-list { display: flex; flex-direction: column; gap: 1.25rem; }
+      .work-card {
+        background: var(--panel);
+        border: 1px solid var(--rule);
+        padding: 1rem 1.25rem;
+      }
+      .work-card.included { border-color: var(--accent); }
+      .work-card.has-error { border-color: var(--danger); }
+      .work-head {
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        gap: 1rem;
+        align-items: center;
+        margin-bottom: 0.5rem;
+      }
+      .work-head .name {
+        font-variant-caps: small-caps;
+        letter-spacing: 0.02em;
+        font-size: 1.15rem;
+        font-weight: 500;
+        color: var(--accent);
+      }
+      .work-head .name .folder {
+        display: block;
+        font-variant-caps: normal;
+        font-style: italic;
+        color: var(--muted);
+        font-size: 0.9rem;
+        font-weight: 400;
+      }
+      .work-head label.include {
+        font-variant-caps: small-caps;
+        font-size: 1rem;
+        cursor: pointer;
+      }
+      .work-head label.include input:disabled + span { color: var(--muted); }
+      .work-error {
+        color: var(--danger);
+        font-size: 0.95rem;
+        font-style: italic;
+        margin: 0 0 0.6rem;
+      }
+      .controls {
+        display: grid;
+        grid-template-columns: 1fr 1fr auto;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+      }
+      .controls label { display: flex; flex-direction: column; font-size: 0.9rem; color: var(--muted); }
+      .controls input,
+      .controls select {
+        font-family: inherit;
+        font-size: 1rem;
+        padding: 0.4rem 0.5rem;
+        border: 1px solid var(--rule);
+        background: #fff;
+      }
+      .controls input.invalid { border-color: var(--danger); background: #fff5f0; }
+      .files {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(var(--thumb-size), 1fr));
+        gap: 0.5rem;
+      }
+      .file {
+        position: relative;
+        background: #e8e1d0;
+        padding: 0.5rem;
+        text-align: center;
+        font-size: 0.85rem;
+        display: flex;
+        flex-direction: column;
+      }
+      .file .thumb-wrap {
+        width: 100%;
+        aspect-ratio: 1;
+        background: #d6cfbe;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+      .file img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        cursor: zoom-in;
+      }
+      .file .name {
+        margin-top: 0.35rem;
+        color: var(--muted);
+        height: 2.6em;
+        line-height: 1.3;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        word-break: break-all;
+      }
+      .file .state-picker {
+        display: flex;
+        margin-top: 0.4rem;
+        border: 1px solid var(--rule);
+        background: #fff;
+        height: 1.85rem;
+      }
+      .file .state-picker button {
+        flex: 1;
+        background: transparent;
+        border: none;
+        border-right: 1px solid var(--rule);
+        font-family: inherit;
+        font-size: 0.78rem;
+        font-variant-caps: small-caps;
+        letter-spacing: 0.04em;
+        color: var(--muted);
+        cursor: pointer;
+        padding: 0;
+      }
+      .file .state-picker button:last-child { border-right: none; }
+      .file .state-picker button:hover { background: #f1ebde; color: var(--text); }
+      .file .state-picker button.active {
+        color: var(--bg);
+        font-weight: 500;
+      }
+      .file .state-picker button.active.state-hide {
+        background: #8a8275;
+      }
+      .file .state-picker button.active.state-show {
+        background: #5a5347;
+      }
+      .file .state-picker button.active.state-main {
+        background: var(--accent);
+      }
+      .file.primary { outline: 2px solid var(--accent); }
+      .file.additional { outline: 2px dashed #5a5347; }
+      .file.non-image { opacity: 0.5; }
+      .work-card.excluded .controls,
+      .work-card.excluded .files { opacity: 0.45; }
+      .lightbox {
+        position: fixed; inset: 0;
+        background: rgba(0,0,0,0.85);
+        display: none;
+        align-items: center; justify-content: center;
+        z-index: 100;
+        cursor: zoom-out;
+      }
+      .lightbox.open { display: flex; }
+      .lightbox img { max-width: 95vw; max-height: 95vh; box-shadow: 0 0 0 1px #fff; }
+    </style>
+  </head>
+  <body>
+    <header class="admin-header">
+      <h1>Your Works</h1>
+      <span class="summary" id="summary">Loading…</span>
+      <label class="size-control">
+        Thumb size
+        <input type="range" id="thumb-size" min="90" max="420" value="140" step="10" />
+      </label>
+      <div class="actions">
+        <span class="status" id="status"></span>
+        <button class="primary" id="save" disabled>Save</button>
+      </div>
+    </header>
+    <div class="alert-banner hidden" id="alert" role="alert">
+      <span id="alert-msg"></span>
+      <button class="close" id="alert-close" aria-label="dismiss">×</button>
+    </div>
+    <main>
+      <div class="work-list" id="list"></div>
+    </main>
+    <div class="lightbox" id="lightbox" role="dialog" aria-label="image preview">
+      <img alt="" id="lightbox-img" />
+    </div>
+
+    <script type="module">
+      const SECTIONS = [
+        ["paintings-2026", "Paintings, 2026"],
+        ["paintings-2025", "Paintings, 2025"],
+        ["paintings-2021-2024", "Paintings, 2021–2024"],
+        ["paintings-before-2021", "Paintings, 2020 and earlier"],
+        ["abstracts", "Abstracts"],
+        ["portraits", "Portraits"],
+        ["commissions", "Commissions"],
+      ];
+
+      const $ = (id) => document.getElementById(id);
+      const status = $("status");
+      const summary = $("summary");
+      const list = $("list");
+      const saveBtn = $("save");
+      const alertBanner = $("alert");
+      const alertMsg = $("alert-msg");
+      const alertClose = $("alert-close");
+      const sizeSlider = $("thumb-size");
+      const lightbox = $("lightbox");
+      const lightboxImg = $("lightbox-img");
+
+      sizeSlider.addEventListener("input", (e) => {
+        document.documentElement.style.setProperty("--thumb-size", e.target.value + "px");
+      });
+      alertClose.addEventListener("click", () => alertBanner.classList.add("hidden"));
+      lightbox.addEventListener("click", () => lightbox.classList.remove("open"));
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") lightbox.classList.remove("open");
+      });
+
+      function showAlert(msg) {
+        alertMsg.textContent = msg;
+        alertBanner.classList.remove("hidden");
+      }
+      function hideAlert() { alertBanner.classList.add("hidden"); }
+
+      function slugify(input) {
+        return input
+          .toLowerCase()
+          .normalize("NFKD")
+          .replace(/[̀-ͯ]/g, "")
+          .replace(/&/g, "and")
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "")
+          .slice(0, 80);
+      }
+
+      let state = [];
+
+      function setFileState(work, filename, next) {
+        if (next === "main") {
+          const prevPrimary = work.primary;
+          if (prevPrimary && prevPrimary !== filename) {
+            work.additional.add(prevPrimary);
+          }
+          work.primary = filename;
+          work.additional.delete(filename);
+        } else if (next === "show") {
+          if (work.primary === filename) work.primary = "";
+          work.additional.add(filename);
+        } else {
+          if (work.primary === filename) work.primary = "";
+          work.additional.delete(filename);
+        }
+      }
+
+      async function load() {
+        status.textContent = "Loading…";
+        try {
+          const r = await fetch("/api/content.json");
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          const { folders, currentWorks } = await r.json();
+          const bySource = new Map();
+          for (const cw of currentWorks) {
+            const src = (cw.sourceFolder || "").replace(/^content\//, "");
+            if (src) bySource.set(src, cw);
+          }
+          state = folders.map((f) => {
+            const existing = bySource.get(f.relPath);
+            const images = f.files.filter((file) => file.isImage);
+            const included = !!existing;
+            const primaryBasename = existing
+              ? (existing.primaryImage || "").split("/").pop()
+              : images[0]?.name || "";
+            const additionalBasenames = new Set(
+              (existing?.additionalImages || []).map((p) => p.split("/").pop())
+            );
+            return {
+              relPath: f.relPath,
+              folderName: f.name,
+              slug: existing?.slug || f.guessedSlug,
+              title: existing?.title || f.guessedTitle,
+              year: existing?.year ?? f.guessedYear ?? 2025,
+              section: existing?.section || f.guessedSection || "paintings-2025",
+              featured: !!existing?.featured,
+              included,
+              primary: primaryBasename,
+              additional: additionalBasenames,
+              files: f.files,
+              hasImages: images.length > 0,
+            };
+          });
+          render();
+          saveBtn.disabled = false;
+          status.textContent = "";
+          status.className = "status";
+        } catch (e) {
+          status.textContent = "";
+          showAlert("Failed to load folders: " + (e.message || e));
+        }
+      }
+
+      function validateState() {
+        const errors = [];
+        const slugs = new Map();
+        for (const w of state) {
+          w._error = null;
+          if (!w.included) continue;
+          if (!w.slug || !/^[a-z0-9][a-z0-9-]*$/.test(w.slug)) {
+            w._error = "Title is empty or has no usable letters (slug ends up “" + w.slug + "”).";
+            errors.push(`${w.folderName}: bad title`);
+            continue;
+          }
+          if (!w.title.trim()) {
+            w._error = "Title cannot be empty.";
+            errors.push(`${w.folderName}: empty title`);
+            continue;
+          }
+          if (!w.primary) {
+            w._error = "Pick a Primary photo (no image is selected).";
+            errors.push(`${w.folderName}: no primary photo selected`);
+            continue;
+          }
+          if (slugs.has(w.slug)) {
+            w._error = `Duplicate slug “${w.slug}” — already used by “${slugs.get(w.slug)}”. Change one of the titles.`;
+            errors.push(`${w.folderName}: duplicate slug ${w.slug}`);
+            continue;
+          }
+          slugs.set(w.slug, w.title);
+        }
+        return errors;
+      }
+
+      function render() {
+        const total = state.length;
+        const included = state.filter((s) => s.included).length;
+        const featured = state.filter((s) => s.included && s.featured).length;
+        summary.textContent = `${total} folders scanned · ${included} on site · ${featured} on home page`;
+
+        validateState();
+
+        list.innerHTML = "";
+        for (const work of state) {
+          list.appendChild(renderWork(work));
+        }
+      }
+
+      function renderWork(work) {
+        const card = document.createElement("div");
+        let cls = "work-card " + (work.included ? "included" : "excluded");
+        if (work._error) cls += " has-error";
+        card.className = cls;
+
+        const head = document.createElement("div");
+        head.className = "work-head";
+        head.innerHTML = `
+          <div class="name">
+            ${escapeHtml(work.title || "(untitled)")}
+            <span class="folder">${escapeHtml(work.folderName)} · ${work.files.filter(f=>f.isImage).length} image${work.files.filter(f=>f.isImage).length===1?"":"s"}</span>
+          </div>
+          <label class="include">
+            <input type="checkbox" data-action="include" ${work.included ? "checked" : ""} ${work.hasImages ? "" : "disabled"} />
+            <span>Show on site${work.hasImages ? "" : " (no images)"}</span>
+          </label>
+          <label class="include">
+            <input type="checkbox" data-action="featured" ${work.featured ? "checked" : ""} ${work.included ? "" : "disabled"} />
+            <span>Show on home page</span>
+          </label>
+        `;
+        card.appendChild(head);
+
+        if (work._error) {
+          const err = document.createElement("p");
+          err.className = "work-error";
+          err.textContent = "⚠ " + work._error;
+          card.appendChild(err);
+        }
+
+        const controls = document.createElement("div");
+        controls.className = "controls";
+        const slugInvalid = work.included && (!work.slug || !/^[a-z0-9][a-z0-9-]*$/.test(work.slug));
+        controls.innerHTML = `
+          <label>Title
+            <input type="text" data-action="title" value="${escapeAttr(work.title)}" class="${slugInvalid ? "invalid" : ""}" />
+          </label>
+          <label>Section
+            <select data-action="section">
+              ${SECTIONS.map(([id, label]) => `<option value="${id}"${id === work.section ? " selected" : ""}>${label}</option>`).join("")}
+            </select>
+          </label>
+          <label>Year
+            <input type="number" min="1900" max="2100" data-action="year" value="${work.year}" />
+          </label>
+        `;
+        card.appendChild(controls);
+
+        const files = document.createElement("div");
+        files.className = "files";
+        for (const f of work.files) {
+          files.appendChild(renderFile(work, f));
+        }
+        card.appendChild(files);
+
+        card.querySelector('[data-action="include"]').addEventListener("change", (e) => {
+          work.included = e.target.checked;
+          if (!work.included) work.featured = false;
+          render();
+        });
+        card.querySelector('[data-action="featured"]').addEventListener("change", (e) => {
+          work.featured = e.target.checked;
+          render();
+        });
+        card.querySelector('[data-action="title"]').addEventListener("input", (e) => {
+          work.title = e.target.value;
+          work.slug = slugify(work.title);
+          // Re-render only this card's head + error to avoid losing focus
+          const oldName = card.querySelector(".name");
+          oldName.firstChild.textContent = work.title || "(untitled)";
+          validateState();
+          renderInlineError(card, work);
+        });
+        card.querySelector('[data-action="section"]').addEventListener("change", (e) => {
+          work.section = e.target.value;
+        });
+        card.querySelector('[data-action="year"]').addEventListener("input", (e) => {
+          work.year = parseInt(e.target.value, 10) || work.year;
+        });
+
+        return card;
+      }
+
+      function renderInlineError(card, work) {
+        const existing = card.querySelector(".work-error");
+        if (work._error) {
+          card.classList.add("has-error");
+          if (existing) existing.textContent = "⚠ " + work._error;
+          else {
+            const err = document.createElement("p");
+            err.className = "work-error";
+            err.textContent = "⚠ " + work._error;
+            card.querySelector(".work-head").after(err);
+          }
+        } else {
+          card.classList.remove("has-error");
+          if (existing) existing.remove();
+        }
+      }
+
+      function renderFile(work, file) {
+        const el = document.createElement("div");
+        const isPrimary = file.name === work.primary;
+        const isAdditional = work.additional.has(file.name);
+        let cls = "file";
+        if (!file.isImage) cls += " non-image";
+        if (isPrimary) cls += " primary";
+        else if (isAdditional) cls += " additional";
+        el.className = cls;
+
+        if (file.isImage) {
+          const thumbSrc = "/api/thumb?path=" + encodeURIComponent(file.relPath) + "&size=600";
+          const fullSrc = "/api/image?path=" + encodeURIComponent(file.relPath);
+          const state = isPrimary ? "main" : (isAdditional ? "show" : "hide");
+          el.innerHTML = `
+            <div class="thumb-wrap"><img src="${thumbSrc}" loading="lazy" alt="" data-full="${fullSrc}" /></div>
+            <div class="name">${escapeHtml(file.name)}</div>
+            <div class="state-picker" role="group" aria-label="image state">
+              <button type="button" data-state-btn="hide" class="state-hide ${state === "hide" ? "active" : ""}" title="Don't show on the site (archive only)">hide</button>
+              <button type="button" data-state-btn="show" class="state-show ${state === "show" ? "active" : ""}" title="Show on this work's detail page">show</button>
+              <button type="button" data-state-btn="main" class="state-main ${state === "main" ? "active" : ""}" title="The main image — used in galleries and the home carousel">main</button>
+            </div>
+          `;
+          el.querySelector("img").addEventListener("click", (e) => {
+            lightboxImg.src = e.target.dataset.full;
+            lightbox.classList.add("open");
+          });
+          el.querySelectorAll("[data-state-btn]").forEach((btn) => {
+            btn.addEventListener("click", () => {
+              const next = btn.dataset.stateBtn;
+              setFileState(work, file.name, next);
+              render();
+            });
+          });
+        } else {
+          el.innerHTML = `
+            <div class="thumb-wrap" style="color:var(--muted);font-style:italic;">non-image</div>
+            <div class="name">${escapeHtml(file.name)}</div>
+            <div class="state-picker" aria-hidden="true" style="visibility:hidden;"></div>
+          `;
+        }
+        return el;
+      }
+
+      async function save() {
+        hideAlert();
+        status.textContent = "Validating…";
+        status.className = "status";
+        const errors = validateState();
+        render();
+        if (errors.length > 0) {
+          status.textContent = "";
+          showAlert("Cannot save — fix these first:\n• " + errors.join("\n• "));
+          return;
+        }
+        const works = state
+          .filter((s) => s.included)
+          .map((s) => ({
+            slug: s.slug,
+            title: s.title,
+            year: s.year,
+            section: s.section,
+            featured: s.featured,
+            sourceFolder: s.relPath,
+            primaryImage: s.primary,
+            additionalImages: Array.from(s.additional),
+          }));
+        if (works.length === 0) {
+          if (!confirm("No works are marked Show on site. Saving will remove ALL works from the public site. Continue?")) {
+            status.textContent = "";
+            return;
+          }
+        }
+        status.textContent = "Saving…";
+        saveBtn.disabled = true;
+        try {
+          const r = await fetch("/api/save", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({ works }),
+          });
+          const j = await r.json().catch(() => ({}));
+          if (!r.ok) throw new Error(j.error || `HTTP ${r.status}`);
+          status.textContent = `Saved ${j.written} work${j.written === 1 ? "" : "s"}.`;
+          status.className = "status success";
+        } catch (e) {
+          status.textContent = "";
+          showAlert("Save failed: " + (e.message || e));
+        } finally {
+          saveBtn.disabled = false;
+        }
+      }
+
+      function escapeHtml(s) {
+        return String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+      }
+      function escapeAttr(s) { return escapeHtml(s); }
+
+      saveBtn.addEventListener("click", save);
+      load();
+    </script>
+  </body>
+</html>

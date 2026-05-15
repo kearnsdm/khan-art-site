@@ -1,0 +1,20 @@
+---
+import Layout from "../layouts/Layout.astro";
+import WorkCard from "../components/WorkCard.astro";
+import { worksBySection } from "../data/works";
+import { sectionTitles } from "../data/sections";
+
+const list = worksBySection("paintings-2021-2024");
+const title = sectionTitles["paintings-2021-2024"];
+---
+
+<Layout title={`${title} — Nicholas Hart Khan`} section="paintings-2021-2024">
+  <h2 class="page-title">{title}</h2>
+  {list.length === 0 ? (
+    <p class="prose" style="text-align:center;color:var(--color-muted);">No works in this section yet.</p>
+  ) : (
+    <section class="gallery-grid">
+      {list.map((work) => <WorkCard work={work} />)}
+    </section>
+  )}
+</Layout>

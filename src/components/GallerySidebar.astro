@@ -1,0 +1,27 @@
+---
+import type { Work } from "../data/works";
+
+interface Props {
+  works: Work[];
+  currentSlug?: string;
+  heading?: string;
+}
+
+const { works, currentSlug, heading } = Astro.props;
+---
+
+<aside class="gallery-sidebar" aria-label="Works in this section">
+  {heading && <p class="sidebar-heading">{heading}</p>}
+  <ul>
+    {works.map((work) => (
+      <li>
+        <a
+          href={`/works/${work.slug}`}
+          aria-current={work.slug === currentSlug ? "true" : undefined}
+        >
+          {work.title}
+        </a>
+      </li>
+    ))}
+  </ul>
+</aside>

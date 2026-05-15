@@ -1,0 +1,80 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { sectionTitles } from "../data/sections";
+
+const title = sectionTitles.contact;
+
+// To receive real submissions when deployed, paste a Formspree (or Netlify Forms)
+// endpoint URL here, e.g. "https://formspree.io/f/abc123". Until then, the form
+// shows an inline thank-you and does nothing.
+const formAction = "";
+---
+
+<Layout title={`${title} — Nicholas Hart Khan`} section="contact">
+  <h2 class="page-title">{title}</h2>
+  <div class="contact-page">
+    <aside class="contact-photo">
+      <div class="photo-frame" aria-label="Artist photo placeholder">
+        <svg viewBox="0 0 100 100" role="img" aria-hidden="true">
+          <circle cx="50" cy="38" r="16" fill="#b8af9a" />
+          <path d="M18 92 q0 -26 32 -26 t32 26 z" fill="#b8af9a" />
+        </svg>
+      </div>
+      <p class="photo-caption">Photo to come</p>
+      <div class="photo-frame" aria-label="Second photo placeholder">
+        <svg viewBox="0 0 100 100" role="img" aria-hidden="true">
+          <circle cx="50" cy="38" r="16" fill="#b8af9a" />
+          <path d="M18 92 q0 -26 32 -26 t32 26 z" fill="#b8af9a" />
+        </svg>
+      </div>
+      <p class="photo-caption">Photo to come</p>
+    </aside>
+    <div class="contact-info">
+      <p class="contact-email">
+        Email: <a href="mailto:nicholashartkhan@gmail.com">nicholashartkhan@gmail.com</a>
+      </p>
+      <form
+        class="contact-form"
+        method="POST"
+        action={formAction || "#"}
+        data-needs-endpoint={formAction ? undefined : "true"}
+      >
+        <p class="form-row">
+          <label for="contact-name">Your name</label>
+          <input id="contact-name" name="name" type="text" required autocomplete="name" />
+        </p>
+        <p class="form-row">
+          <label for="contact-email-field">Your email</label>
+          <input id="contact-email-field" name="email" type="email" required autocomplete="email" />
+        </p>
+        <p class="form-row">
+          <label for="contact-subject">Subject</label>
+          <input id="contact-subject" name="subject" type="text" />
+        </p>
+        <p class="form-row">
+          <label for="contact-message">Message</label>
+          <textarea id="contact-message" name="message" rows="6" required></textarea>
+        </p>
+        <p class="form-submit">
+          <button type="submit">Send</button>
+        </p>
+        <p class="form-thanks" hidden>Thank you — your message has been sent.</p>
+      </form>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  document.querySelectorAll<HTMLFormElement>(".contact-form").forEach((form) => {
+    form.addEventListener("submit", (e) => {
+      if (form.dataset.needsEndpoint === "true") {
+        e.preventDefault();
+        const thanks = form.querySelector<HTMLElement>(".form-thanks");
+        form.querySelectorAll<HTMLElement>(".form-row, .form-submit").forEach((r) => {
+          r.hidden = true;
+        });
+        if (thanks) thanks.hidden = false;
+      }
+    });
+  });
+</script>

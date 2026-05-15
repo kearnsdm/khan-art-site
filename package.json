@@ -1,0 +1,21 @@
+{
+  "name": "khan-art-site",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/netlify": "^6.6.5",
+    "astro": "^5.0.0",
+    "sharp": "^0.34.5"
+  },
+  "devDependencies": {
+    "playwright": "^1.60.0"
+  }
+}

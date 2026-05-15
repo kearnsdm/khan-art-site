@@ -1,0 +1,27 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { works } from "../../data/works";
+
+export function getStaticPaths() {
+  return works.map((work) => ({ params: { slug: work.slug }, props: { work } }));
+}
+
+const { work } = Astro.props;
+---
+
+<Layout title={`${work.title} — Nicholas Hart Khan`} section={work.section} workSlug={work.slug}>
+  <article class="work-detail">
+    <img class="work-hero" src={work.primaryImage} alt={work.primaryImageAlt} />
+    <div class="work-info">
+      <h1>{work.title}</h1>
+      <p>{work.year}</p>
+    </div>
+    {work.additionalImages.length > 0 && (
+      <section class="work-additional">
+        {work.additionalImages.map((src) => (
+          <img src={src} alt={`Additional view of ${work.title}`} loading="lazy" />
+        ))}
+      </section>
+    )}
+  </article>
+</Layout>

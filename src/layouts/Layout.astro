@@ -1,0 +1,48 @@
+---
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import SideNav from "../components/SideNav.astro";
+import type { SectionId } from "../data/sections";
+import "../styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+  section?: SectionId | null;
+  workSlug?: string;
+}
+
+const {
+  title = "Nicholas Hart Khan — Visual Artist",
+  description = "Paintings and portraits by Nicholas Hart Khan.",
+  section = null,
+  workSlug,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+    />
+  </head>
+  <body>
+    <Header />
+    <div class="page-layout">
+      <SideNav currentSection={section} currentWorkSlug={workSlug} />
+      <main>
+        <slot />
+      </main>
+    </div>
+    <Footer />
+  </body>
+</html>

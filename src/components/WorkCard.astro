@@ -1,0 +1,22 @@
+---
+import type { Work } from "../data/works";
+
+interface Props {
+  work: Work;
+}
+
+const { work } = Astro.props;
+---
+
+<a class="work-card" href={`/works/${work.slug}`}>
+  <img
+    class="work-thumb"
+    src={work.primaryImage}
+    alt={work.primaryImageAlt}
+    loading="lazy"
+  />
+  <div class="work-meta">
+    <p class="work-title">{work.title}</p>
+    <p class="work-sub">{work.year}</p>
+  </div>
+</a>
