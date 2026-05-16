@@ -189,11 +189,36 @@ function readContentRoot(): string {
 
 let _instance: ContentStorage | null = null;
 
+/**
+ * Detect whether we're running inside a Netlify function (or any other
+ * AWS Lambda — which is what Netlify uses underneath).
+ *
+ * `process.env.NETLIFY === "true"` is set during the BUILD, but not
+ * reliably at function RUNTIME, so checking only that was the bug that
+ * sent every production upload to the filesystem code path. We check
+ * multiple signals and treat any of them as proof that we should use
+ * Blobs instead of the local filesystem.
+ */
+function isOnNetlify(): boolean {
+  if (typeof process === "undefined") return false;
+  const env = process.env;
+  if (!env) return false;
+  return (
+    env.NETLIFY === "true" ||
+    // Set whenever Netlify Blobs is provisioned for the site — most
+    // direct signal we're in a Blobs-capable context.
+    !!env.NETLIFY_BLOBS_CONTEXT ||
+    // Lambda runtime markers. Netlify functions run on Lambda; both
+    // of these are reliably present even when NETLIFY isn't.
+    !!env.LAMBDA_TASK_ROOT ||
+    !!env.AWS_LAMBDA_FUNCTION_NAME ||
+    !!env.AWS_EXECUTION_ENV
+  );
+}
+
 export function contentStorage(): ContentStorage {
   if (_instance) return _instance;
-  const onNetlify =
-    typeof process !== "undefined" && process.env?.NETLIFY === "true";
-  if (onNetlify) {
+  if (isOnNetlify()) {
     _instance = new BlobsStorage();
   } else {
     _instance = new FilesystemStorage(readContentRoot());
@@ -203,5 +228,5 @@ export function contentStorage(): ContentStorage {
 
 /** True iff the current environment uses Netlify Blobs (production). */
 export function usingBlobs(): boolean {
-  return typeof process !== "undefined" && process.env?.NETLIFY === "true";
+  return isOnNetlify();
 }
