@@ -2089,14 +2089,37 @@ export const prerender = false;
         status.className = ok ? "status success" : "status";
       }
 
+      // Cap matches the server-side MAX_FILE_BYTES (5 MB on free-tier
+      // Netlify). Anything bigger we reject client-side with a clear
+      // message rather than wasting bandwidth.
+      const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
+
       async function uploadOne(filePath, file) {
+        if (file.size > MAX_UPLOAD_BYTES) {
+          const mb = (file.size / 1024 / 1024).toFixed(1);
+          throw new Error(
+            `"${filePath}" is ${mb} MB — too large for the website to accept ` +
+            `(max ~5 MB per file). Re-export this image at a smaller size or ` +
+            `convert PNG → JPEG and try again.`
+          );
+        }
         const fd = new FormData();
         fd.append("path", filePath);
         fd.append("file", file, file.name);
         const r = await fetch("/api/sync/upload", { method: "POST", body: fd });
         let j = {};
         try { j = await r.json(); } catch {}
-        if (!r.ok) throw new Error(j.error || `HTTP ${r.status} uploading ${filePath}`);
+        if (!r.ok) {
+          // Netlify itself returns 413 when the multipart body is too
+          // large to even reach the function. Surface a helpful note.
+          if (r.status === 413) {
+            throw new Error(
+              `"${filePath}" too large for the website to accept ` +
+              `(max ~5 MB per file). Re-export smaller or use JPEG.`
+            );
+          }
+          throw new Error(j.error || `HTTP ${r.status} uploading ${filePath}`);
+        }
         return j;
       }
 

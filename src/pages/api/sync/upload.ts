@@ -4,7 +4,13 @@ import { isPublishable } from "../../../lib/content-scanner";
 
 export const prerender = false;
 
-const MAX_FILE_BYTES = 25 * 1024 * 1024; // 25 MB hard cap per upload
+// Netlify's synchronous function request body limit on the
+// Free / Starter tier is ~6 MB. A multipart upload has overhead on
+// top of the file bytes (boundary markers, the `path` field, headers),
+// so we cap actual file payload at 5 MB to leave headroom. On a paid
+// tier the underlying Netlify limit is ~25 MB — bump this number
+// accordingly if you upgrade.
+const MAX_FILE_BYTES = 5 * 1024 * 1024;
 
 function jsonResponse(payload: unknown, status = 200): Response {
   return new Response(JSON.stringify(payload), {
@@ -82,17 +88,29 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   const store = contentStorage();
-  if (await store.has(key)) {
-    // Additive-only: don't overwrite. Browser-side dedup should
-    // have caught this, but enforce server-side too.
-    return jsonResponse({ ok: true, skipped: true, reason: "exists" });
+  try {
+    if (await store.has(key)) {
+      // Additive-only: don't overwrite. Browser-side dedup should
+      // have caught this, but enforce server-side too.
+      return jsonResponse({ ok: true, skipped: true, reason: "exists" });
+    }
+
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    await store.put(key, bytes, {
+      size: String(bytes.byteLength),
+      lastModified: String(Date.now()),
+    });
+
+    return jsonResponse({ ok: true, written: bytes.byteLength });
+  } catch (err) {
+    // Anything thrown by Netlify Blobs (auth, quota, network) bubbles
+    // up here. Surface the actual error message so the admin shows
+    // something diagnostic instead of a generic HTTP 500.
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[sync/upload] storage error for", key, message);
+    return jsonResponse(
+      { error: `storage error: ${message}` },
+      500
+    );
   }
-
-  const bytes = new Uint8Array(await file.arrayBuffer());
-  await store.put(key, bytes, {
-    size: String(bytes.byteLength),
-    lastModified: String(Date.now()),
-  });
-
-  return jsonResponse({ ok: true, written: bytes.byteLength });
 };
