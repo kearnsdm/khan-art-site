@@ -40,6 +40,12 @@
     width: 140px;
     accent-color: var(--color-accent, #1a1a1a);
   }
+  /* On phones the sizing slider isn't useful — the grid already
+     adapts to a single column at narrow widths and the visitor is
+     unlikely to want to tweak thumbnail size on a small screen. */
+  @media (max-width: 820px) {
+    .gallery-controls { display: none; }
+  }
 </style>
 
 <script is:inline>
