@@ -1734,9 +1734,14 @@ export const prerender = false;
           let j = {};
           try { j = await r.json(); } catch {}
           if (!r.ok) throw new Error(j.error || `HTTP ${r.status}`);
+          // Refresh local state from the server FIRST, then set the
+          // "Saved N works" green confirmation. Setting it before
+          // load() caused the message to be wiped out by load()'s own
+          // "Loading…" status update within ~100 ms — visually
+          // invisible, so it looked like saving did nothing.
+          await load();
           status.textContent = `Saved ${j.written} work${j.written === 1 ? "" : "s"}.`;
           status.className = "status success";
-          await load();
         } catch (e) {
           status.textContent = "";
           showAlert("Save failed: " + (e.message || e));
@@ -1904,10 +1909,12 @@ export const prerender = false;
           try { j = await r.json(); } catch {}
           if (!r.ok) throw new Error(j.error || `HTTP ${r.status}`);
           closeTagsModal();
+          // Refresh state first, then set the green status — otherwise
+          // load()'s own "Loading…" status update wipes it out within
+          // ~100 ms and the confirmation is invisible.
+          await load();
           status.textContent = `Saved ${j.count} categor${j.count === 1 ? "y" : "ies"}.`;
           status.className = "status success";
-          // Re-load so the chip rows on every work card pick up the new vocab.
-          await load();
         } catch (e) {
           showAlert("Failed to save categories: " + (e.message || e));
           console.error(e);
@@ -2057,10 +2064,12 @@ export const prerender = false;
           try { j = await r.json(); } catch {}
           if (!r.ok) throw new Error(j.error || `HTTP ${r.status}`);
           closeYearGroupsModal();
+          // Refresh state first, then set the green status — otherwise
+          // load()'s own "Loading…" status update wipes it out within
+          // ~100 ms and the confirmation is invisible.
+          await load();
           status.textContent = `Saved ${j.count} year range${j.count === 1 ? "" : "s"}.`;
           status.className = "status success";
-          // Refresh state so the picker reflects the new live config.
-          await load();
         } catch (e) {
           showAlert("Failed to save year ranges: " + (e.message || e));
           console.error(e);

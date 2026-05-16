@@ -244,8 +244,18 @@ export const POST: APIRoute = async ({ request }) => {
       : [],
   };
 
+  // Log what we're about to write — surfaces in Netlify function logs.
+  // Important for tracking down "I saved but it didn't persist" reports:
+  // if the log shows the write happening but the next read returns
+  // stale data, the bug is on the read side; if the write is missing
+  // entirely, save() may not be reaching this point.
+  console.log(
+    `[api/save] writing ${outWorks.length} works (${outWorks.filter((w) => !w.published === false || w.published === undefined).length} published)`
+  );
+
   try {
     await saveMeta(META_KEYS.works, { meta, works: outWorks });
+    console.log("[api/save] saveMeta completed");
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error("[api/save] saveMeta failed:", message);
