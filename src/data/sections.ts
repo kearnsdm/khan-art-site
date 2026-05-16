@@ -56,7 +56,10 @@ export const navItems: NavItem[] = [
     kind: "link",
     id: "bio",
     href: "/about",
-    label: "About",
+    // Label uses the pipe as a plain text separator — the page houses
+    // both the bio and the contact form, so the nav entry mirrors the
+    // page title.
+    label: "About | Contact",
     pinBottom: true,
   },
 ];
