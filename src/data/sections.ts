@@ -46,20 +46,18 @@ export type NavItem = NavLink | NavGroup | NavCombo;
  *
  * The "Works" group (year-based) is rendered directly inside SideNav
  * with children driven by src/data/year-groups.json. Tag-based items
- * with `inNav: true` get injected after the Works group. About | Contact
- * pinned at the bottom.
+ * with `inNav: true` get injected after the Works group. About is
+ * pinned at the bottom — the bio and contact form live on the same
+ * page so a single nav item is enough; visitors scroll down to reach
+ * the contact form.
  */
 export const navItems: NavItem[] = [
   {
-    kind: "combo",
-    id: "about-contact",
+    kind: "link",
+    id: "bio",
+    href: "/about",
+    label: "About",
     pinBottom: true,
-    links: [
-      // Both links go to the same combined page; the Contact link jumps
-      // straight to the #contact section via the URL fragment.
-      { id: "bio", href: "/about", label: "About" },
-      { id: "contact", href: "/about#contact", label: "Contact" },
-    ],
   },
 ];
 

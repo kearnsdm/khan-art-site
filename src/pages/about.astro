@@ -11,30 +11,49 @@ const formAction = "";
   <article class="about-page">
     <section id="about" class="about-section">
       <h2 class="page-title">About</h2>
-      <div class="prose">
-        <p>Biography and CV content goes here.</p>
+
+      <!-- Bio paragraphs and the portrait sit side-by-side on desktop
+           and stack on narrow screens. The image floats to the right
+           of the first paragraph so the text wraps around it naturally
+           on wider viewports; on phones we fall back to the image
+           appearing above the text via the media query at the bottom
+           of this file. -->
+      <div class="bio-layout">
+        <figure class="bio-portrait">
+          <img
+            src="/about/nicholas-portrait.jpg"
+            alt="Nicholas Khan standing in front of one of his paintings"
+            loading="eager"
+          />
+        </figure>
+        <div class="prose bio-text">
+          <p>
+            Nicholas Khan is a visual artist based in Raleigh, North Carolina
+            and formerly in Connecticut. He specializes as a painter of
+            landscapes, architecture, and abstracts. He also has experience in
+            portraiture, installations, and colorizing photos of historical
+            buildings.
+          </p>
+          <p>
+            He received his B.A. from Eastern Connecticut State University in
+            2017 where he studied with Andy Jones, Qimin Liu and Afarin
+            Rahmanifar. His major also included art history, where he studied
+            the history of the Hudson River School, frame history and design,
+            and vernacular Victorian architecture in New England.
+          </p>
+          <p>
+            In 2021 Nicholas graduated from the MFA program at the School of
+            the Museum of Fine Arts at Tufts University (Boston). His work
+            there explored narratives of identity as it relates to private
+            and public spaces as well as the histories of those places.
+          </p>
+        </div>
       </div>
     </section>
 
     <section id="contact" class="about-section">
       <h2 class="page-title">Contact</h2>
       <div class="contact-page">
-        <aside class="contact-photo">
-          <div class="photo-frame" aria-label="Artist photo placeholder">
-            <svg viewBox="0 0 100 100" role="img" aria-hidden="true">
-              <circle cx="50" cy="38" r="16" fill="#b8af9a" />
-              <path d="M18 92 q0 -26 32 -26 t32 26 z" fill="#b8af9a" />
-            </svg>
-          </div>
-          <p class="photo-caption">Photo to come</p>
-          <div class="photo-frame" aria-label="Second photo placeholder">
-            <svg viewBox="0 0 100 100" role="img" aria-hidden="true">
-              <circle cx="50" cy="38" r="16" fill="#b8af9a" />
-              <path d="M18 92 q0 -26 32 -26 t32 26 z" fill="#b8af9a" />
-            </svg>
-          </div>
-          <p class="photo-caption">Photo to come</p>
-        </aside>
         <div class="contact-info">
           <p class="contact-email">
             Email: <a href="mailto:nicholashartkhan@gmail.com">nicholashartkhan@gmail.com</a>
@@ -84,6 +103,49 @@ const formAction = "";
      heading doesn't sit flush against the previous content. */
   #contact {
     scroll-margin-top: 1.5rem;
+  }
+
+  /* Bio + portrait side-by-side on desktop. The portrait sits at a
+     fixed width so it doesn't dominate the column; the bio text fills
+     the remaining space. */
+  .bio-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 280px;
+    gap: 2rem;
+    align-items: start;
+  }
+  .bio-portrait {
+    margin: 0;
+    /* Push the figure to the column it's been assigned to (right). */
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .bio-portrait img {
+    display: block;
+    width: 100%;
+    height: auto;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+  }
+  .bio-text {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  /* Stack on phones: portrait above the text, full width but capped so
+     it doesn't take over the screen. */
+  @media (max-width: 720px) {
+    .bio-layout {
+      grid-template-columns: 1fr;
+    }
+    .bio-portrait,
+    .bio-text {
+      grid-column: 1;
+      grid-row: auto;
+    }
+    .bio-portrait img {
+      max-width: 320px;
+      margin: 0 auto;
+    }
   }
 </style>
 
