@@ -1,0 +1,54 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import WorkCard from "../../components/WorkCard.astro";
+import GalleryControls from "../../components/GalleryControls.astro";
+import { works, sortWorksForDisplay } from "../../data/works";
+import { yearGroups, type YearGroup } from "../../data/year-groups";
+
+export const prerender = true;
+
+export function getStaticPaths() {
+  return yearGroups.map((group) => ({
+    params: { range: group.id },
+    props: { group },
+  }));
+}
+
+interface Props {
+  group: YearGroup;
+}
+
+const { group } = Astro.props as Props;
+
+const min = typeof group.minYear === "number" ? group.minYear : Number.NEGATIVE_INFINITY;
+const max = typeof group.maxYear === "number" ? group.maxYear : Number.POSITIVE_INFINITY;
+// Filter to published works only — drafts (published === false) live in
+// works.json for the admin's editing convenience but must never appear
+// on the public site (no images on public/works/, so the cards would
+// just show broken-image squares).
+const list = sortWorksForDisplay(
+  works.filter(
+    (w) =>
+      w.published !== false &&
+      typeof w.year === "number" &&
+      w.year >= min &&
+      w.year <= max
+  )
+);
+---
+
+<Layout title={`${group.pageTitle} — Nicholas Hart Khan`} currentYearGroupId={group.id}>
+  <h2 class="page-title">{group.pageTitle}</h2>
+  {list.length === 0 ? (
+    <p class="prose" style="text-align:center;color:var(--color-muted);">
+      No works in this section yet.
+    </p>
+  ) : (
+    <>
+      <GalleryControls />
+      <section class="gallery-grid">
+        {list.map((work) => <WorkCard work={work} />)}
+      </section>
+    </>
+  )}
+</Layout>

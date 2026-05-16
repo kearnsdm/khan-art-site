@@ -1,20 +1,4 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import WorkCard from "../components/WorkCard.astro";
-import { worksBySection } from "../data/works";
-import { sectionTitles } from "../data/sections";
-
-const list = worksBySection("paintings-2025");
-const title = sectionTitles["paintings-2025"];
+// Legacy URL — see paintings-2026.astro.
+return Astro.redirect("/paintings/2025", 301);
 ---
-
-<Layout title={`${title} — Nicholas Hart Khan`} section="paintings-2025">
-  <h2 class="page-title">{title}</h2>
-  {list.length === 0 ? (
-    <p class="prose" style="text-align:center;color:var(--color-muted);">No works in this section yet.</p>
-  ) : (
-    <section class="gallery-grid">
-      {list.map((work) => <WorkCard work={work} />)}
-    </section>
-  )}
-</Layout>

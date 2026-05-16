@@ -1,0 +1,19 @@
+{
+  "groups": [
+    {
+      "minYear": 2026,
+      "maxYear": 2026
+    },
+    {
+      "minYear": 2025,
+      "maxYear": 2025
+    },
+    {
+      "minYear": 2020,
+      "maxYear": 2024
+    },
+    {
+      "maxYear": 2019
+    }
+  ]
+}

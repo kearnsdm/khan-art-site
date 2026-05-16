@@ -1,0 +1,26 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import WorkCard from "../../components/WorkCard.astro";
+import GalleryControls from "../../components/GalleryControls.astro";
+import { works, sortWorksForDisplay } from "../../data/works";
+
+export const prerender = true;
+
+const list = sortWorksForDisplay(works.filter((w) => w.published !== false));
+---
+
+<Layout title="Works — Nicholas Hart Khan" isWorksHome={true}>
+  <h2 class="page-title">Works</h2>
+  {list.length === 0 ? (
+    <p class="prose" style="text-align:center;color:var(--color-muted);">
+      No works yet.
+    </p>
+  ) : (
+    <>
+      <GalleryControls />
+      <section class="gallery-grid">
+        {list.map((work) => <WorkCard work={work} />)}
+      </section>
+    </>
+  )}
+</Layout>

@@ -234,7 +234,7 @@ main {
 
 .gallery-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(var(--gallery-thumb-min, 280px), 1fr));
   gap: 2rem;
 }
 
@@ -244,8 +244,12 @@ main {
 
 .work-card .work-thumb {
   width: 100%;
+  /* Keep a uniform card height so the grid stays tidy across paintings
+     of different orientations. Switch to `contain` so portrait, landscape,
+     and panorama all show fully — never cropped. Whatever's narrower
+     than the container gets letterboxed against the neutral background. */
   aspect-ratio: 4 / 3;
-  object-fit: cover;
+  object-fit: contain;
   background: #e8e1d0;
 }
 

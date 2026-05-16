@@ -1,0 +1,74 @@
+---
+/**
+ * Visitor-facing thumbnail-size control. Sets `--gallery-thumb-min` on
+ * <html>, which `.gallery-grid` reads to size its `minmax()` columns.
+ * Preference is persisted to localStorage so it sticks across pages.
+ *
+ * Drop into any page that renders `.gallery-grid`, above the grid.
+ */
+---
+
+<div class="gallery-controls" aria-label="Thumbnail size">
+  <label>
+    <span>Thumbnail size</span>
+    <input
+      type="range"
+      id="gallery-thumb-size"
+      min="180"
+      max="480"
+      step="20"
+      value="280"
+    />
+  </label>
+</div>
+
+<style>
+  .gallery-controls {
+    display: flex;
+    justify-content: flex-end;
+    margin: 0 0 1.25rem;
+  }
+  .gallery-controls label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.9rem;
+    font-style: italic;
+    color: var(--color-muted, #6a6457);
+  }
+  .gallery-controls input[type="range"] {
+    width: 140px;
+    accent-color: var(--color-accent, #1a1a1a);
+  }
+</style>
+
+<script is:inline>
+  // Inline (synchronous) so the saved size is applied before the gallery
+  // paints — avoids a flash from the default 280px to the user's size.
+  (function () {
+    var KEY = "galleryThumbSize";
+    var MIN = 180;
+    var MAX = 480;
+    var slider = document.getElementById("gallery-thumb-size");
+    var stored = parseInt(localStorage.getItem(KEY) || "", 10);
+    var initial = stored >= MIN && stored <= MAX ? stored : 280;
+    document.documentElement.style.setProperty(
+      "--gallery-thumb-min",
+      initial + "px"
+    );
+    if (slider) {
+      slider.value = String(initial);
+      slider.addEventListener("input", function (e) {
+        var v = parseInt(e.target.value, 10);
+        if (!(v >= MIN && v <= MAX)) return;
+        document.documentElement.style.setProperty(
+          "--gallery-thumb-min",
+          v + "px"
+        );
+        try {
+          localStorage.setItem(KEY, String(v));
+        } catch (_) {}
+      });
+    }
+  })();
+</script>

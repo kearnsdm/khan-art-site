@@ -10,6 +10,12 @@ interface Props {
   description?: string;
   section?: SectionId | null;
   workSlug?: string;
+  /** When set, highlights the matching tag-based menu item. */
+  currentTagId?: string | null;
+  /** When set, highlights the matching year-range child of the Works group. */
+  currentYearGroupId?: string | null;
+  /** True on the /works landing page — highlights the Works parent link. */
+  isWorksHome?: boolean;
 }
 
 const {
@@ -17,6 +23,9 @@ const {
   description = "Paintings and portraits by Nicholas Hart Khan.",
   section = null,
   workSlug,
+  currentTagId = null,
+  currentYearGroupId = null,
+  isWorksHome = false,
 } = Astro.props;
 ---
 
@@ -38,11 +47,51 @@ const {
   <body>
     <Header />
     <div class="page-layout">
-      <SideNav currentSection={section} currentWorkSlug={workSlug} />
+      <SideNav
+        currentSection={section}
+        currentWorkSlug={workSlug}
+        currentTagId={currentTagId}
+        currentYearGroupId={currentYearGroupId}
+        isWorksHome={isWorksHome}
+      />
       <main>
         <slot />
       </main>
     </div>
     <Footer />
+
+    <a class="admin-key" href="/login" aria-label="Sign in" title="Sign in">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M14.5 4a5.5 5.5 0 0 0-5.32 6.92L2 18.1V22h3.9l1.4-1.4v-1.8h1.8l1.4-1.4v-1.8h1.8l1.6-1.6A5.5 5.5 0 1 0 14.5 4Zm2 6a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3Z" />
+      </svg>
+    </a>
+
+    <style>
+      .admin-key {
+        position: fixed;
+        bottom: 0.85rem;
+        right: 0.85rem;
+        width: 22px;
+        height: 22px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--color-muted, #6a6457);
+        opacity: 0.35;
+        transition: opacity 0.15s ease;
+        z-index: 100;
+        text-decoration: none;
+      }
+      .admin-key:hover,
+      .admin-key:focus-visible {
+        opacity: 1;
+        outline: none;
+      }
+      .admin-key svg {
+        width: 100%;
+        height: 100%;
+        fill: currentColor;
+      }
+    </style>
   </body>
 </html>

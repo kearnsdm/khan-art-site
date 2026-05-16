@@ -1,93 +1,305 @@
 ---
-import { navItems, type SectionId, type NavGroup } from "../data/sections";
-import { worksBySection } from "../data/works";
+import { navItems, type SectionId } from "../data/sections";
+import { works, worksByTag, sortWorksForDisplay } from "../data/works";
+import { navTags } from "../data/tags";
+import { yearGroups, type YearGroup } from "../data/year-groups";
 
 interface Props {
   currentSection?: SectionId | null;
   currentWorkSlug?: string;
+  currentTagId?: string | null;
+  currentYearGroupId?: string | null;
+  /** True on the /works landing page. Highlights the Works link. */
+  isWorksHome?: boolean;
 }
 
-const { currentSection = null, currentWorkSlug } = Astro.props;
+const {
+  currentSection = null,
+  currentWorkSlug,
+  currentTagId = null,
+  currentYearGroupId = null,
+  isWorksHome = false,
+} = Astro.props;
 
-function groupContainsCurrent(group: NavGroup, current: SectionId | null) {
-  return current ? group.children.some((c) => c.id === current) : false;
+function worksInYearGroup(g: YearGroup) {
+  const min = typeof g.minYear === "number" ? g.minYear : Number.NEGATIVE_INFINITY;
+  const max = typeof g.maxYear === "number" ? g.maxYear : Number.POSITIVE_INFINITY;
+  // Only published works appear in the side nav. Drafts persist in
+  // works.json for editing in the admin but are hidden from the
+  // public-facing menu.
+  return sortWorksForDisplay(
+    works.filter(
+      (w) =>
+        w.published !== false &&
+        typeof w.year === "number" &&
+        w.year >= min &&
+        w.year <= max
+    )
+  );
 }
 
-function worksFor(id: SectionId | "home") {
-  if (id === "home" || id === "bio" || id === "contact") return [];
-  return worksBySection(id);
-}
+const worksGroupContainsCurrent = currentYearGroupId !== null || isWorksHome;
+
+const topItems = navItems.filter((item) => !item.pinBottom);
+const bottomItems = navItems.filter((item) => item.pinBottom);
 ---
 
 <nav class="side-nav" aria-label="Primary">
   <ul>
-    {navItems.map((item) => {
+    {/* "Works" group. The label is now a real link to /works (which
+        lists every published work). A separate caret toggles the year
+        children below — same disclosure pattern as the sub-listings. */}
+    <li class={`group${worksGroupContainsCurrent ? " current" : ""}`}>
+      <span class="sub-row group-row">
+        <a
+          href="/works"
+          class="category group-label"
+          aria-current={isWorksHome ? "page" : undefined}
+        >Works</a>
+        <button
+          type="button"
+          class="sub-disclosure"
+          aria-expanded="true"
+          aria-controls="subnav-works"
+          aria-label="Show or hide year list"
+          data-storage-key="subnav-works"
+        >
+          <svg viewBox="0 0 10 10" aria-hidden="true">
+            <path d="M2 4 L8 4 L5 8 Z" fill="currentColor" />
+          </svg>
+        </button>
+      </span>
+      <ul id="subnav-works" class="group-children">
+        {yearGroups.map((g) => {
+            const isCurrent = g.id === currentYearGroupId;
+            const groupWorks = isCurrent ? worksInYearGroup(g) : [];
+            const subId = `subnav-year-${g.id}`;
+            return (
+              <li class={isCurrent ? "current" : undefined}>
+                <span class="sub-row">
+                  <a
+                    href={g.href}
+                    aria-current={isCurrent ? "page" : undefined}
+                    class="category subcategory"
+                  >
+                    {g.label}
+                  </a>
+                  {groupWorks.length > 0 && (
+                    <button
+                      type="button"
+                      class="sub-disclosure"
+                      aria-expanded="true"
+                      aria-controls={subId}
+                      aria-label={`Show or hide works in ${g.label}`}
+                      data-storage-key={subId}
+                    >
+                      <svg viewBox="0 0 10 10" aria-hidden="true">
+                        <path d="M2 4 L8 4 L5 8 Z" fill="currentColor" />
+                      </svg>
+                    </button>
+                  )}
+                </span>
+                {groupWorks.length > 0 && (
+                  <ul id={subId} class="sub-nav">
+                    {groupWorks.map((w) => (
+                      <li>
+                        <a
+                          href={`/works/${w.slug}`}
+                          aria-current={w.slug === currentWorkSlug ? "true" : undefined}
+                        >
+                          {w.title}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            );
+          })}
+      </ul>
+    </li>
+
+    {/* Any future top-level non-pinned items would render here. */}
+    {topItems.map((item) => {
       if (item.kind === "link") {
         const isCurrent = item.id === currentSection;
-        const sectionWorks = isCurrent ? worksFor(item.id) : [];
         return (
           <li class={isCurrent ? "current" : undefined}>
             <a href={item.href} aria-current={isCurrent ? "page" : undefined} class="category">
               {item.label}
             </a>
-            {sectionWorks.length > 0 && (
-              <ul class="sub-nav">
-                {sectionWorks.map((w) => (
-                  <li>
-                    <a
-                      href={`/works/${w.slug}`}
-                      aria-current={w.slug === currentWorkSlug ? "true" : undefined}
-                    >
-                      {w.title}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            )}
           </li>
         );
       }
+      return null;
+    })}
 
-      const containsCurrent = groupContainsCurrent(item, currentSection);
-      const isOpen = item.defaultOpen || containsCurrent;
+    {/* Tag-based menu items, injected between the Works group and About/Contact.
+        Each entry comes from tags.json with inNav=true. */}
+    {navTags.map((tag) => {
+      const isCurrent = tag.id === currentTagId;
+      const tagWorks = isCurrent ? worksByTag(tag.id) : [];
+      const subId = `subnav-tag-${tag.id}`;
       return (
-        <li class={`group${containsCurrent ? " current" : ""}`}>
-          <details open={isOpen}>
-            <summary class="category group-label">{item.label}</summary>
-            <ul class="group-children">
-              {item.children.map((child) => {
-                const childIsCurrent = child.id === currentSection;
-                const sectionWorks = childIsCurrent ? worksFor(child.id) : [];
-                return (
-                  <li class={childIsCurrent ? "current" : undefined}>
-                    <a
-                      href={child.href}
-                      aria-current={childIsCurrent ? "page" : undefined}
-                      class="category subcategory"
-                    >
-                      {child.label}
-                    </a>
-                    {sectionWorks.length > 0 && (
-                      <ul class="sub-nav">
-                        {sectionWorks.map((w) => (
-                          <li>
-                            <a
-                              href={`/works/${w.slug}`}
-                              aria-current={w.slug === currentWorkSlug ? "true" : undefined}
-                            >
-                              {w.title}
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </li>
-                );
-              })}
+        <li class={isCurrent ? "current" : undefined}>
+          <span class="sub-row">
+            <a
+              href={`/category/${tag.id}`}
+              aria-current={isCurrent ? "page" : undefined}
+              class="category"
+            >
+              {tag.label}
+            </a>
+            {tagWorks.length > 0 && (
+              <button
+                type="button"
+                class="sub-disclosure"
+                aria-expanded="true"
+                aria-controls={subId}
+                aria-label={`Show or hide works in ${tag.label}`}
+                data-storage-key={subId}
+              >
+                <svg viewBox="0 0 10 10" aria-hidden="true">
+                  <path d="M2 4 L8 4 L5 8 Z" fill="currentColor" />
+                </svg>
+              </button>
+            )}
+          </span>
+          {tagWorks.length > 0 && (
+            <ul id={subId} class="sub-nav">
+              {tagWorks.map((w) => (
+                <li>
+                  <a
+                    href={`/works/${w.slug}`}
+                    aria-current={w.slug === currentWorkSlug ? "true" : undefined}
+                  >
+                    {w.title}
+                  </a>
+                </li>
+              ))}
             </ul>
-          </details>
+          )}
         </li>
       );
     })}
+
+    {/* Pinned-to-bottom items (About | Contact). */}
+    {bottomItems.map((item) => {
+      if (item.kind === "link") {
+        const isCurrent = item.id === currentSection;
+        return (
+          <li class={isCurrent ? "current" : undefined}>
+            <a href={item.href} aria-current={isCurrent ? "page" : undefined} class="category">
+              {item.label}
+            </a>
+          </li>
+        );
+      }
+      if (item.kind === "combo") {
+        const anyCurrent = item.links.some((l) => l.id === currentSection);
+        return (
+          <li class={`combo-row${anyCurrent ? " current" : ""}`}>
+            {item.links.map((l, i) => (
+              <>
+                {i > 0 && <span class="combo-sep" aria-hidden="true">|</span>}
+                <a
+                  href={l.href}
+                  class="category"
+                  aria-current={l.id === currentSection ? "page" : undefined}
+                >
+                  {l.label}
+                </a>
+              </>
+            ))}
+          </li>
+        );
+      }
+      return null;
+    })}
   </ul>
 </nav>
+
+<style>
+  .side-nav .combo-row {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .side-nav .combo-row .combo-sep {
+    color: var(--color-muted, #6a6457);
+    opacity: 0.65;
+    user-select: none;
+  }
+
+  /* The category-link + disclosure-caret pair, kept inline. */
+  .side-nav .sub-row {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.35rem;
+  }
+  /* Top-level Works group row uses the same link+caret pattern as
+     sub-rows, but should match the visual weight of other top-level
+     items (no subcategory indent). */
+  .side-nav .group-row .group-label {
+    font-variant-caps: small-caps;
+    letter-spacing: 0.02em;
+  }
+  .side-nav .sub-disclosure {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    color: var(--color-muted, #6a6457);
+    /* Square hit target keeps the rotated SVG fully inside its layout box,
+       so the icon doesn't get clipped or visually mangled after toggling. */
+    width: 16px;
+    height: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.7;
+    transition: opacity 0.15s ease;
+  }
+  .side-nav .sub-disclosure:hover,
+  .side-nav .sub-disclosure:focus-visible {
+    opacity: 1;
+    outline: none;
+  }
+  .side-nav .sub-disclosure svg {
+    width: 10px;
+    height: 10px;
+    fill: currentColor;
+    transition: transform 0.15s ease;
+  }
+  .side-nav .sub-disclosure[aria-expanded="false"] svg {
+    transform: rotate(-90deg);
+  }
+  .side-nav .sub-nav[hidden] { display: none; }
+</style>
+
+<script is:inline>
+  (function () {
+    var btns = document.querySelectorAll(".side-nav .sub-disclosure");
+    if (!btns.length) return;
+    btns.forEach(function (btn) {
+      var targetId = btn.getAttribute("aria-controls");
+      var target = targetId ? document.getElementById(targetId) : null;
+      if (!target) return;
+      var key = "sideNav:" + (btn.dataset.storageKey || targetId);
+      if (localStorage.getItem(key) === "collapsed") {
+        btn.setAttribute("aria-expanded", "false");
+        target.hidden = true;
+      }
+      btn.addEventListener("click", function () {
+        var isExpanded = btn.getAttribute("aria-expanded") !== "false";
+        btn.setAttribute("aria-expanded", String(!isExpanded));
+        target.hidden = isExpanded;
+        try {
+          localStorage.setItem(key, isExpanded ? "collapsed" : "expanded");
+        } catch (_) {}
+      });
+    });
+  })();
+</script>

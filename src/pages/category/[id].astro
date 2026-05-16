@@ -1,0 +1,37 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import WorkCard from "../../components/WorkCard.astro";
+import GalleryControls from "../../components/GalleryControls.astro";
+import { worksByTag } from "../../data/works";
+import { tags } from "../../data/tags";
+
+// Prerender one page per category at build time so navigation is fast
+// and survives without the SSR adapter being warm.
+export const prerender = true;
+
+export function getStaticPaths() {
+  return tags.map((tag) => ({
+    params: { id: tag.id },
+    props: { tag },
+  }));
+}
+
+const { tag } = Astro.props;
+const list = worksByTag(tag.id);
+---
+
+<Layout title={`${tag.label} — Nicholas Hart Khan`} currentTagId={tag.id}>
+  <h2 class="page-title">{tag.label}</h2>
+  {list.length === 0 ? (
+    <p class="prose" style="text-align:center;color:var(--color-muted);">
+      No works tagged "{tag.label}" yet.
+    </p>
+  ) : (
+    <>
+      <GalleryControls />
+      <section class="gallery-grid">
+        {list.map((work) => <WorkCard work={work} />)}
+      </section>
+    </>
+  )}
+</Layout>

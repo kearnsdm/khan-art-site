@@ -1,27 +1,436 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import { works } from "../../data/works";
+import {
+  works,
+  primaryImagePath,
+  primaryImageAlt,
+  detailImages,
+  workHeadline,
+  sortWorksForDisplay,
+} from "../../data/works";
+
+export const prerender = true;
 
 export function getStaticPaths() {
-  return works.map((work) => ({ params: { slug: work.slug }, props: { work } }));
+  // Drafts (published === false) don't get a public URL.
+  return works
+    .filter((work) => work.published !== false)
+    .map((work) => ({ params: { slug: work.slug }, props: { work } }));
 }
 
 const { work } = Astro.props;
+const heroSrc = primaryImagePath(work);
+const heroAlt = primaryImageAlt(work);
+const extras = detailImages(work);
+const firstImage = work.images[0];
+
+function statusLabel(s?: string): string {
+  if (s === "nfs") return "NFS";
+  if (s === "sold") return "Sold";
+  return "";
+}
+
+// Compute prev/next neighbor URLs in the site's default display order.
+// This lets the zoom view step painting-by-painting without going back
+// to the gallery. Drafts are excluded — only published works are reachable.
+const ordered = sortWorksForDisplay(works.filter((w) => w.published !== false));
+const myIdx = ordered.findIndex((w) => w.slug === work.slug);
+const prevWork = myIdx > 0 ? ordered[myIdx - 1] : null;
+const nextWork = myIdx >= 0 && myIdx < ordered.length - 1 ? ordered[myIdx + 1] : null;
+
+type ZoomEntry = {
+  src: string;
+  alt: string;
+  caption?: string;
+  status?: string;
+};
+const zoomEntries: ZoomEntry[] = [];
+if (heroSrc) {
+  zoomEntries.push({
+    src: heroSrc,
+    alt: heroAlt,
+    caption: firstImage?.caption,
+    status: firstImage?.status,
+  });
+}
+for (const { path, image } of extras) {
+  zoomEntries.push({
+    src: path,
+    alt: `Additional view of ${work.title}`,
+    caption: image.caption,
+    status: image.status,
+  });
+}
+const zoomData = JSON.stringify(zoomEntries);
 ---
 
-<Layout title={`${work.title} — Nicholas Hart Khan`} section={work.section} workSlug={work.slug}>
-  <article class="work-detail">
-    <img class="work-hero" src={work.primaryImage} alt={work.primaryImageAlt} />
+<Layout title={`${work.title} — Nicholas Hart Khan`} workSlug={work.slug}>
+  <article class="work-detail" id="work-detail">
     <div class="work-info">
-      <h1>{work.title}</h1>
-      <p>{work.year}</p>
+      <h1 class="work-title">{workHeadline(work)}</h1>
+      {work.caption && <p class="work-caption">{work.caption}</p>}
     </div>
-    {work.additionalImages.length > 0 && (
+
+    {heroSrc && (
+      <figure class="work-figure work-hero-figure">
+        <img
+          class="work-hero zoomable"
+          src={heroSrc}
+          alt={heroAlt}
+          data-zoom-index="0"
+          tabindex="0"
+          role="button"
+          aria-label={`View ${work.title} full size`}
+        />
+        {firstImage?.caption && (
+          <figcaption class="image-caption">{firstImage.caption}</figcaption>
+        )}
+        {firstImage?.status && (
+          <p class="image-status">{statusLabel(firstImage.status)}</p>
+        )}
+      </figure>
+    )}
+
+    {extras.length > 0 && (
       <section class="work-additional">
-        {work.additionalImages.map((src) => (
-          <img src={src} alt={`Additional view of ${work.title}`} loading="lazy" />
+        {extras.map(({ path, image }, i) => (
+          <figure class="work-figure">
+            <img
+              class="zoomable"
+              src={path}
+              alt={`Additional view of ${work.title}`}
+              loading="lazy"
+              data-zoom-index={String(i + 1)}
+              tabindex="0"
+              role="button"
+              aria-label={`View ${image.caption || work.title} full size`}
+            />
+            {image.caption && (
+              <figcaption class="image-caption">{image.caption}</figcaption>
+            )}
+            {image.status && (
+              <p class="image-status">{statusLabel(image.status)}</p>
+            )}
+          </figure>
         ))}
       </section>
     )}
   </article>
+
+  <!-- Zoom stage. Fills the entire viewport so the image actually
+       enlarges past the main-column constraints. Uses the page bg
+       (no dim modal); the explicit Back button at top-left is how
+       you leave. Side arrows step to the previous / next painting. -->
+  <section
+    class="zoom-stage"
+    id="zoom-stage"
+    aria-label="Image zoom"
+    hidden
+  >
+    <div class="zoom-top">
+      <button type="button" class="zoom-back" id="zoom-back" aria-label="Back to work">
+        ← Back
+      </button>
+      <span class="zoom-title" id="zoom-title"></span>
+    </div>
+
+    {prevWork && (
+      <a
+        class="zoom-nav zoom-prev"
+        href={`/works/${prevWork.slug}#zoom-0`}
+        aria-label={`Previous painting: ${prevWork.title}`}
+        title={`Previous: ${prevWork.title}`}
+      >‹</a>
+    )}
+    {nextWork && (
+      <a
+        class="zoom-nav zoom-next"
+        href={`/works/${nextWork.slug}#zoom-0`}
+        aria-label={`Next painting: ${nextWork.title}`}
+        title={`Next: ${nextWork.title}`}
+      >›</a>
+    )}
+
+    <figure class="zoom-figure">
+      <img class="zoom-img" id="zoom-img" alt="" />
+      <figcaption class="zoom-caption" id="zoom-caption" hidden></figcaption>
+      <p class="zoom-status" id="zoom-status" hidden></p>
+    </figure>
+  </section>
+
+  <script type="application/json" id="zoom-data" set:html={zoomData}></script>
+  <script
+    is:inline
+    define:vars={{
+      workTitle: work.title,
+      prevHref: prevWork ? `/works/${prevWork.slug}#zoom-0` : null,
+      nextHref: nextWork ? `/works/${nextWork.slug}#zoom-0` : null,
+    }}
+  >
+    (function () {
+      const article = document.getElementById("work-detail");
+      const stage = document.getElementById("zoom-stage");
+      const zoomImg = document.getElementById("zoom-img");
+      const zoomCaption = document.getElementById("zoom-caption");
+      const zoomStatus = document.getElementById("zoom-status");
+      const zoomTitle = document.getElementById("zoom-title");
+      const zoomBack = document.getElementById("zoom-back");
+      const dataEl = document.getElementById("zoom-data");
+      if (!article || !stage || !zoomImg || !dataEl) return;
+
+      let entries = [];
+      try { entries = JSON.parse(dataEl.textContent || "[]"); } catch (_) {}
+
+      function statusLabel(s) {
+        if (s === "nfs") return "NFS";
+        if (s === "sold") return "Sold";
+        return "";
+      }
+
+      function showZoom(idx) {
+        const entry = entries[idx];
+        if (!entry) {
+          hideZoom();
+          return;
+        }
+        zoomImg.src = entry.src;
+        zoomImg.alt = entry.alt || "";
+        if (entry.caption) {
+          zoomCaption.textContent = entry.caption;
+          zoomCaption.removeAttribute("hidden");
+        } else {
+          zoomCaption.setAttribute("hidden", "");
+        }
+        if (entry.status) {
+          zoomStatus.textContent = statusLabel(entry.status);
+          zoomStatus.removeAttribute("hidden");
+        } else {
+          zoomStatus.setAttribute("hidden", "");
+        }
+        if (zoomTitle) zoomTitle.textContent = workTitle;
+        // Hide the article from screen + a11y tree while the stage is up.
+        article.setAttribute("hidden", "");
+        stage.removeAttribute("hidden");
+        // Lock body scroll so the stage truly takes over.
+        document.documentElement.style.overflow = "hidden";
+      }
+
+      function hideZoom() {
+        stage.setAttribute("hidden", "");
+        article.removeAttribute("hidden");
+        zoomImg.removeAttribute("src");
+        document.documentElement.style.overflow = "";
+      }
+
+      function readHash() {
+        const m = window.location.hash.match(/^#zoom-(\d+)$/);
+        if (!m) return null;
+        const n = parseInt(m[1], 10);
+        return Number.isFinite(n) ? n : null;
+      }
+
+      function applyHash() {
+        const idx = readHash();
+        if (idx === null) hideZoom();
+        else showZoom(idx);
+      }
+
+      window.addEventListener("hashchange", applyHash);
+      applyHash();
+
+      // Image click → open zoom.
+      document.querySelectorAll("img.zoomable").forEach((img) => {
+        const open = () => {
+          const idx = img.dataset.zoomIndex || "0";
+          window.location.hash = "zoom-" + idx;
+        };
+        img.addEventListener("click", open);
+        img.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            open();
+          }
+        });
+      });
+
+      function goBack() {
+        if (window.history.length > 1) {
+          window.history.back();
+        } else {
+          // Direct land on a #zoom-N URL with no history — fall back to
+          // clearing the hash via replace so we don't add a new entry.
+          history.replaceState(null, "", window.location.pathname + window.location.search);
+          hideZoom();
+        }
+      }
+      zoomBack.addEventListener("click", goBack);
+      // Clicking the zoomed image itself also dismisses.
+      zoomImg.addEventListener("click", goBack);
+
+      document.addEventListener("keydown", (e) => {
+        if (stage.hasAttribute("hidden")) return;
+        if (e.key === "Escape") {
+          goBack();
+        } else if (e.key === "ArrowLeft" && prevHref) {
+          window.location.href = prevHref;
+        } else if (e.key === "ArrowRight" && nextHref) {
+          window.location.href = nextHref;
+        }
+      });
+    })();
+  </script>
 </Layout>
+
+<style>
+  .work-figure {
+    margin: 0 auto 1.5rem;
+    text-align: center;
+  }
+  .work-figure img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+  }
+  .work-figure img.zoomable {
+    cursor: zoom-in;
+  }
+  .image-caption {
+    margin: 0.5rem 0 0;
+    font-style: italic;
+    font-size: 0.95rem;
+    color: var(--color-muted, #6a6457);
+    text-align: center;
+  }
+  .image-status {
+    margin: 0.15rem 0 0;
+    font-style: italic;
+    font-size: 0.85rem;
+    color: #9a9485;
+    text-align: center;
+    letter-spacing: 0.02em;
+  }
+
+  /* Zoom stage. Fixed positioning escapes the main column so the
+     image actually enlarges to use the viewport. Solid page-bg
+     background (not dim) keeps it feeling like "another page" rather
+     than a modal popup. */
+  .zoom-stage {
+    position: fixed;
+    inset: 0;
+    background: var(--color-bg, #f1ebde);
+    display: flex;
+    flex-direction: column;
+    z-index: 150;
+  }
+  .zoom-stage[hidden] { display: none; }
+
+  .zoom-top {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    right: 1rem;
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    z-index: 2;
+  }
+  .zoom-back {
+    font-family: inherit;
+    font-size: 1rem;
+    font-variant-caps: small-caps;
+    letter-spacing: 0.04em;
+    padding: 0.5rem 1.1rem;
+    background: var(--color-panel, #faf6ec);
+    color: var(--color-accent, #1a1a1a);
+    border: 1px solid var(--color-rule, #d6cfbe);
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+  .zoom-back:hover,
+  .zoom-back:focus-visible {
+    background: var(--color-accent, #1a1a1a);
+    color: var(--color-bg, #f1ebde);
+    outline: none;
+  }
+  .zoom-title {
+    font-style: italic;
+    color: var(--color-muted, #6a6457);
+    font-size: 1rem;
+  }
+
+  /* Prev/next navigation. Big, centered vertically, easy to hit. */
+  .zoom-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 4rem;
+    font-size: 2rem;
+    color: var(--color-accent, #1a1a1a);
+    background: var(--color-panel, #faf6ec);
+    border: 1px solid var(--color-rule, #d6cfbe);
+    text-decoration: none;
+    cursor: pointer;
+    z-index: 2;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    user-select: none;
+  }
+  .zoom-nav:hover,
+  .zoom-nav:focus-visible {
+    background: var(--color-accent, #1a1a1a);
+    color: var(--color-bg, #f1ebde);
+    outline: none;
+  }
+  .zoom-prev { left: 1rem; }
+  .zoom-next { right: 1rem; }
+
+  /* Figure fills the remaining viewport, padded so the image doesn't
+     bump up against the back button or arrows. */
+  .zoom-figure {
+    margin: 0;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 5rem 3.5rem;
+    gap: 0.5rem;
+  }
+  .zoom-img {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    cursor: zoom-out;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
+  }
+  .zoom-caption {
+    margin: 0;
+    font-style: italic;
+    font-size: 1rem;
+    color: var(--color-muted, #6a6457);
+    text-align: center;
+  }
+  .zoom-status {
+    margin: 0.1rem 0 0;
+    font-style: italic;
+    font-size: 0.9rem;
+    color: #9a9485;
+    text-align: center;
+    letter-spacing: 0.02em;
+  }
+
+  @media (max-width: 640px) {
+    .zoom-figure { padding: 4.5rem 2.5rem 3rem; }
+    .zoom-nav { width: 2.5rem; height: 3rem; font-size: 1.5rem; }
+    .zoom-prev { left: 0.5rem; }
+    .zoom-next { right: 0.5rem; }
+  }
+</style>

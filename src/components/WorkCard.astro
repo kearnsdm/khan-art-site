@@ -1,22 +1,19 @@
 ---
 import type { Work } from "../data/works";
+import { primaryImagePath, primaryImageAlt, workHeadline } from "../data/works";
 
 interface Props {
   work: Work;
 }
 
 const { work } = Astro.props;
+const src = primaryImagePath(work);
+const alt = primaryImageAlt(work);
 ---
 
 <a class="work-card" href={`/works/${work.slug}`}>
-  <img
-    class="work-thumb"
-    src={work.primaryImage}
-    alt={work.primaryImageAlt}
-    loading="lazy"
-  />
+  {src && <img class="work-thumb" src={src} alt={alt} loading="lazy" />}
   <div class="work-meta">
-    <p class="work-title">{work.title}</p>
-    <p class="work-sub">{work.year}</p>
+    <p class="work-title">{workHeadline(work)}</p>
   </div>
 </a>

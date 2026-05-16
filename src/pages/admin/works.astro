@@ -24,7 +24,8 @@ export const prerender = false;
         --accent: #1a1a1a;
         --danger: #8a2a2a;
         --warn: #a85a14;
-        --thumb-size: 140px;
+        --new: #c9a236;
+        --thumb-size: 160px;
       }
       * { box-sizing: border-box; }
       body {
@@ -40,7 +41,7 @@ export const prerender = false;
         top: 0;
         background: var(--bg);
         border-bottom: 1px solid var(--rule);
-        padding: 0.85rem 1.5rem;
+        padding: 0.85rem 1.5rem 0.55rem;
         z-index: 10;
         display: flex;
         align-items: center;
@@ -54,21 +55,10 @@ export const prerender = false;
         letter-spacing: 0.02em;
         font-size: 1.5rem;
       }
-      header.admin-header .summary {
-        color: var(--muted);
-        font-style: italic;
+      header.admin-header .summary { color: var(--muted); font-style: italic; }
+      header.admin-header .actions {
+        margin-left: auto; display: flex; gap: 0.75rem; align-items: center;
       }
-      header.admin-header .size-control {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-size: 0.95rem;
-        color: var(--muted);
-      }
-      header.admin-header .size-control input[type="range"] {
-        width: 160px;
-      }
-      header.admin-header .actions { margin-left: auto; display: flex; gap: 0.75rem; align-items: center; }
       button.primary {
         font-family: inherit;
         font-size: 1.05rem;
@@ -91,50 +81,147 @@ export const prerender = false;
       }
       .status { font-style: italic; color: var(--muted); min-width: 12rem; }
       .status.success { color: #2d6b2d; font-style: normal; font-weight: 500; }
+
+      .toolbar {
+        background: #ebe4d4;
+        border-bottom: 1px solid var(--rule);
+        padding: 0.5rem 1.5rem;
+        display: flex; flex-wrap: wrap;
+        gap: 0.5rem 1rem;
+        align-items: center;
+        position: sticky; top: 60px; z-index: 9;
+      }
+      .toolbar .field { display: flex; align-items: center; gap: 0.4rem; font-size: 0.92rem; color: var(--muted); }
+      .toolbar select,
+      .toolbar input[type="text"],
+      .toolbar input[type="number"] {
+        font-family: inherit; font-size: 0.95rem;
+        padding: 0.25rem 0.5rem;
+        border: 1px solid var(--rule); background: #fff;
+      }
+      .toolbar .toolbar-divider { width: 1px; align-self: stretch; background: var(--rule); margin: 0 0.4rem; }
+      .toolbar .size-control input[type="range"] { width: 140px; }
+      .toolbar .filter-chip-row { display: flex; gap: 0.3rem; flex-wrap: wrap; }
+
       .alert-banner {
         background: #f6e3d8;
         border: 1px solid var(--danger);
         color: var(--danger);
         padding: 0.85rem 1.25rem;
-        margin: 0 1.5rem 1rem;
+        margin: 1rem 1.5rem 0;
         font-weight: 500;
         display: flex;
         gap: 1rem;
         align-items: center;
+        white-space: pre-wrap;
       }
       .alert-banner.hidden { display: none; }
       .alert-banner .close {
-        margin-left: auto;
-        cursor: pointer;
-        background: transparent;
-        border: none;
-        font-size: 1.4rem;
-        color: var(--danger);
+        margin-left: auto; cursor: pointer;
+        background: transparent; border: none;
+        font-size: 1.4rem; color: var(--danger);
       }
       main { padding: 1.5rem; }
+
       .work-list { display: flex; flex-direction: column; gap: 1.25rem; }
+      .empty-state {
+        text-align: center; color: var(--muted); font-style: italic;
+        padding: 2rem;
+      }
+
       .work-card {
         background: var(--panel);
         border: 1px solid var(--rule);
         padding: 1rem 1.25rem;
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 1rem;
+        position: relative;
       }
       .work-card.included { border-color: var(--accent); }
       .work-card.has-error { border-color: var(--danger); }
-      .work-head {
-        display: grid;
-        grid-template-columns: 1fr auto auto;
-        gap: 1rem;
-        align-items: center;
-        margin-bottom: 0.5rem;
+      .work-card.is-new { border-color: var(--new); background: #fbf5e5; }
+
+      .work-trash {
+        position: absolute;
+        top: 0.5rem; right: 0.55rem;
+        background: transparent;
+        border: none;
+        color: var(--muted);
+        cursor: pointer;
+        padding: 0.1rem;
+        line-height: 0;
+        opacity: 0.55;
+        transition: opacity 0.15s ease, color 0.15s ease;
       }
+      .work-trash svg { display: block; width: 16px; height: 16px; }
+      .work-trash:hover { color: var(--danger); opacity: 1; }
+
+      .work-rail {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 0.7rem;
+        padding-right: 1rem;
+        border-right: 1px solid var(--rule);
+        min-width: 11rem;
+      }
+      .show-toggle {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.4rem;
+        cursor: pointer;
+        font-size: 0.95rem;
+      }
+      .show-toggle input[type="checkbox"] {
+        width: 28px; height: 28px;
+        accent-color: var(--accent);
+        cursor: pointer;
+      }
+      .show-toggle .show-toggle-label {
+        font-variant-caps: small-caps;
+        letter-spacing: 0.04em;
+        text-align: center;
+        line-height: 1.2;
+      }
+      .new-badge {
+        background: var(--new);
+        color: #fff;
+        font-variant-caps: small-caps;
+        letter-spacing: 0.05em;
+        font-size: 0.8rem;
+        padding: 0.2rem 0.6rem;
+        border-radius: 999px;
+        margin-top: 0.3rem;
+      }
+
+      .work-body { display: flex; flex-direction: column; gap: 0.75rem; min-width: 0; }
+      /* When excluded, fade the metadata controls but NOT the images strip
+         — Nicholas needs to be able to reorder + flip Show on excluded
+         works. The title gets its own color treatment below (not opacity),
+         so this rule skips .work-head. */
+      .work-card.excluded .controls,
+      .work-card.excluded .caption-row,
+      .work-card.excluded .tags-row { opacity: 0.55; }
+
       .work-head .name {
         font-variant-caps: small-caps;
         letter-spacing: 0.02em;
         font-size: 1.15rem;
         font-weight: 500;
+        /* Default: visibly faded title for "not on the website" works.
+           Stays clearly readable, just signals "this isn't published yet". */
+        color: #9c9588;
+        padding-right: 2rem; /* keep clear of the trash icon */
+      }
+      .work-card.included .work-head .name {
+        /* Published works get the full accent color for a strong visual
+           "this is on the site" cue. */
         color: var(--accent);
       }
-      .work-head .name .folder {
+      .work-head .folder {
         display: block;
         font-variant-caps: normal;
         font-style: italic;
@@ -142,25 +229,23 @@ export const prerender = false;
         font-size: 0.9rem;
         font-weight: 400;
       }
-      .work-head label.include {
-        font-variant-caps: small-caps;
-        font-size: 1rem;
-        cursor: pointer;
-      }
-      .work-head label.include input:disabled + span { color: var(--muted); }
       .work-error {
         color: var(--danger);
         font-size: 0.95rem;
         font-style: italic;
-        margin: 0 0 0.6rem;
+        margin: 0;
       }
       .controls {
         display: grid;
-        grid-template-columns: 1fr 1fr auto;
-        gap: 0.75rem;
-        margin-bottom: 0.75rem;
+        grid-template-columns: 2fr 0.7fr 0.7fr 0.7fr 0.9fr;
+        gap: 0.5rem 0.75rem;
+        align-items: end;
       }
-      .controls label { display: flex; flex-direction: column; font-size: 0.9rem; color: var(--muted); }
+      .controls label {
+        display: flex; flex-direction: column;
+        font-size: 0.85rem; color: var(--muted);
+        gap: 0.25rem;
+      }
       .controls input,
       .controls select {
         font-family: inherit;
@@ -170,12 +255,64 @@ export const prerender = false;
         background: #fff;
       }
       .controls input.invalid { border-color: var(--danger); background: #fff5f0; }
-      .files {
+
+      .caption-row {
+        display: flex; flex-direction: column;
+        font-size: 0.85rem; color: var(--muted);
+        gap: 0.25rem;
+      }
+      .caption-row textarea {
+        font-family: inherit;
+        font-size: 1rem;
+        padding: 0.45rem 0.55rem;
+        border: 1px solid var(--rule);
+        background: #fff;
+        min-height: 3em;
+        resize: vertical;
+      }
+      .caption-toggle {
+        display: inline-flex; align-items: center; gap: 0.35rem;
+        font-size: 0.88rem; color: var(--muted);
+        cursor: pointer;
+        align-self: flex-start;
+      }
+      .caption-toggle input { cursor: pointer; }
+
+      .tags-row {
+        display: flex; flex-wrap: wrap;
+        gap: 0.4rem;
+        align-items: center;
+      }
+      .tags-row .tags-label {
+        font-size: 0.9rem;
+        color: var(--muted);
+        margin-right: 0.25rem;
+      }
+      .tag-chip {
+        font-family: inherit;
+        font-size: 0.9rem;
+        font-variant-caps: small-caps;
+        letter-spacing: 0.04em;
+        padding: 0.25rem 0.8rem;
+        background: #fff;
+        color: var(--muted);
+        border: 1px solid var(--rule);
+        cursor: pointer;
+        border-radius: 999px;
+      }
+      .tag-chip:hover { color: var(--text); border-color: var(--accent); }
+      .tag-chip.on {
+        background: var(--accent);
+        color: var(--bg);
+        border-color: var(--accent);
+      }
+
+      .images-strip {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(var(--thumb-size), 1fr));
         gap: 0.5rem;
       }
-      .file {
+      .image-card {
         position: relative;
         background: #e8e1d0;
         padding: 0.5rem;
@@ -183,8 +320,61 @@ export const prerender = false;
         font-size: 0.85rem;
         display: flex;
         flex-direction: column;
+        gap: 0.4rem;
       }
-      .file .thumb-wrap {
+      .image-card.is-first { outline: 2px solid var(--accent); }
+      .image-card.is-new { background: #fbf5e5; outline: 2px solid var(--new); }
+      .image-card.not-included { opacity: 0.75; }
+      .image-card.non-image { opacity: 0.5; }
+      .image-card .badge-row {
+        position: absolute;
+        top: 0.35rem;
+        left: 0.35rem;
+        right: 0.35rem;
+        display: flex;
+        justify-content: space-between;
+        gap: 0.25rem;
+        pointer-events: none;
+        z-index: 1;
+      }
+      .image-card .order-label {
+        background: var(--accent);
+        color: var(--bg);
+        font-variant-caps: small-caps;
+        font-size: 0.72rem;
+        letter-spacing: 0.04em;
+        padding: 0.15rem 0.45rem;
+        border-radius: 4px;
+      }
+      .image-card .new-tag {
+        background: var(--new);
+        color: #fff;
+        font-variant-caps: small-caps;
+        font-size: 0.72rem;
+        letter-spacing: 0.04em;
+        padding: 0.15rem 0.45rem;
+        border-radius: 4px;
+      }
+      .image-card .image-trash {
+        position: absolute;
+        top: 0.35rem;
+        right: 0.35rem;
+        z-index: 2;
+        background: rgba(255,255,255,0.85);
+        border: 1px solid var(--rule);
+        color: var(--muted);
+        cursor: pointer;
+        padding: 0.15rem;
+        line-height: 0;
+        border-radius: 4px;
+        opacity: 0.7;
+        transition: opacity 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+      }
+      .image-card .image-trash svg { display: block; width: 14px; height: 14px; }
+      .image-card .image-trash:hover {
+        color: var(--danger); border-color: var(--danger); opacity: 1;
+      }
+      .image-card .thumb-wrap {
         width: 100%;
         aspect-ratio: 1;
         background: #d6cfbe;
@@ -193,15 +383,13 @@ export const prerender = false;
         justify-content: center;
         overflow: hidden;
       }
-      .file img {
-        width: 100%;
-        height: 100%;
+      .image-card img {
+        width: 100%; height: 100%;
         object-fit: cover;
         display: block;
         cursor: zoom-in;
       }
-      .file .name {
-        margin-top: 0.35rem;
+      .image-card .name {
         color: var(--muted);
         height: 2.6em;
         line-height: 1.3;
@@ -211,46 +399,90 @@ export const prerender = false;
         -webkit-box-orient: vertical;
         word-break: break-all;
       }
-      .file .state-picker {
-        display: flex;
-        margin-top: 0.4rem;
+      .image-controls {
+        display: flex; gap: 0.25rem;
+        justify-content: center;
+        align-items: center;
+      }
+      .reorder-btn {
+        font-family: inherit;
+        font-size: 1rem;
+        background: #fff;
+        border: 1px solid var(--rule);
+        cursor: pointer;
+        padding: 0.1rem 0.45rem;
+        line-height: 1;
+        color: var(--text);
+      }
+      .reorder-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+      .image-shown-toggle {
+        display: flex; align-items: center; gap: 0.3rem;
+        font-size: 0.82rem; color: var(--muted);
+        cursor: pointer;
+      }
+      .image-shown-toggle input:disabled { cursor: not-allowed; }
+      .image-shown-toggle input:disabled + span { color: var(--accent); font-weight: 500; }
+
+      .image-caption-input {
+        font-family: inherit;
+        font-size: 0.82rem;
+        padding: 0.3rem 0.4rem;
         border: 1px solid var(--rule);
         background: #fff;
-        height: 1.85rem;
+        width: 100%;
+        text-align: left;
       }
-      .file .state-picker button {
-        flex: 1;
-        background: transparent;
-        border: none;
-        border-right: 1px solid var(--rule);
-        font-family: inherit;
-        font-size: 0.78rem;
-        font-variant-caps: small-caps;
-        letter-spacing: 0.04em;
-        color: var(--muted);
+      .image-caption-toggle {
+        display: flex; align-items: center; gap: 0.25rem;
+        font-size: 0.78rem; color: var(--muted);
         cursor: pointer;
-        padding: 0;
+        justify-content: center;
       }
-      .file .state-picker button:last-child { border-right: none; }
-      .file .state-picker button:hover { background: #f1ebde; color: var(--text); }
-      .file .state-picker button.active {
-        color: var(--bg);
-        font-weight: 500;
+      .image-caption-toggle input { cursor: pointer; }
+      .image-extras {
+        display: flex; flex-direction: column; gap: 0.3rem;
       }
-      .file .state-picker button.active.state-hide {
-        background: #8a8275;
+      .image-extras .row {
+        display: flex; justify-content: center; gap: 0.7rem;
+        font-size: 0.82rem; color: var(--muted);
+        flex-wrap: wrap;
       }
-      .file .state-picker button.active.state-show {
-        background: #5a5347;
+      .image-extras label {
+        display: flex; align-items: center; gap: 0.2rem;
+        cursor: pointer;
       }
-      .file .state-picker button.active.state-main {
-        background: var(--accent);
+      .image-extras input:disabled { cursor: not-allowed; }
+      .image-extras input:disabled + span { opacity: 0.5; }
+
+      .hidden-section {
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px dashed var(--rule);
       }
-      .file.primary { outline: 2px solid var(--accent); }
-      .file.additional { outline: 2px dashed #5a5347; }
-      .file.non-image { opacity: 0.5; }
-      .work-card.excluded .controls,
-      .work-card.excluded .files { opacity: 0.45; }
+      .hidden-section summary {
+        cursor: pointer;
+        font-style: italic;
+        color: var(--muted);
+        margin-bottom: 0.75rem;
+      }
+      .hidden-row {
+        display: flex; gap: 0.6rem; align-items: center;
+        padding: 0.4rem 0.6rem;
+        border: 1px dashed var(--rule);
+        margin-bottom: 0.4rem;
+        font-size: 0.9rem;
+      }
+      .hidden-row .actions {
+        margin-left: auto;
+        display: flex; gap: 0.4rem;
+      }
+      .hidden-row button {
+        background: transparent; border: 1px solid var(--rule);
+        padding: 0.2rem 0.6rem; cursor: pointer;
+        font-family: inherit; font-size: 0.85rem;
+      }
+      .hidden-row .restore:hover { border-color: var(--accent); }
+
       .lightbox {
         position: fixed; inset: 0;
         background: rgba(0,0,0,0.85);
@@ -261,41 +493,308 @@ export const prerender = false;
       }
       .lightbox.open { display: flex; }
       .lightbox img { max-width: 95vw; max-height: 95vh; box-shadow: 0 0 0 1px #fff; }
+
+      .toolbar-btn {
+        background: var(--panel);
+      }
+
+      /* Manage-categories modal */
+      .modal-backdrop {
+        position: fixed; inset: 0;
+        background: rgba(0,0,0,0.45);
+        display: none;
+        align-items: flex-start; justify-content: center;
+        z-index: 200;
+        padding: 4rem 1rem;
+        overflow-y: auto;
+      }
+      .modal-backdrop.open { display: flex; }
+      .modal {
+        background: var(--panel);
+        border: 1px solid var(--rule);
+        padding: 1.5rem 1.75rem;
+        max-width: 520px;
+        width: 100%;
+        max-height: calc(100vh - 8rem);
+        overflow-y: auto;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.18);
+      }
+      .modal h2 {
+        margin: 0 0 0.4rem;
+        font-variant-caps: small-caps;
+        letter-spacing: 0.02em;
+        font-weight: 500;
+        font-size: 1.4rem;
+      }
+      .modal .modal-intro {
+        margin: 0 0 1rem;
+        color: var(--muted);
+        font-style: italic;
+        font-size: 0.95rem;
+      }
+      .tag-edit-list {
+        display: flex; flex-direction: column; gap: 0.4rem;
+        margin-bottom: 1rem;
+      }
+      .tag-edit-row {
+        display: flex; align-items: center; gap: 0.55rem;
+      }
+      .tag-edit-row input[type="text"] {
+        flex: 1;
+        font-family: inherit; font-size: 1rem;
+        padding: 0.4rem 0.55rem;
+        border: 1px solid var(--rule);
+        background: #fff;
+      }
+      .tag-edit-row .uses {
+        font-size: 0.82rem;
+        color: var(--muted);
+        font-style: italic;
+        white-space: nowrap;
+      }
+      .tag-edit-row .innav-toggle {
+        display: inline-flex; align-items: center; gap: 0.3rem;
+        font-size: 0.85rem; color: var(--muted);
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .tag-edit-row .innav-toggle input { cursor: pointer; }
+      .tag-edit-row .remove {
+        background: transparent;
+        border: 1px solid var(--rule);
+        color: var(--muted);
+        cursor: pointer;
+        padding: 0.3rem 0.55rem;
+        font-family: inherit;
+        font-size: 0.85rem;
+      }
+      .tag-edit-row .remove:hover {
+        background: #f6e3d8; color: var(--danger); border-color: var(--danger);
+      }
+      .add-tag {
+        display: flex; gap: 0.5rem;
+        margin-bottom: 1.25rem;
+        padding-top: 0.75rem;
+        border-top: 1px dashed var(--rule);
+      }
+      .add-tag input {
+        flex: 1;
+        font-family: inherit; font-size: 1rem;
+        padding: 0.45rem 0.55rem;
+        border: 1px solid var(--rule);
+        background: #fff;
+      }
+      .add-tag button {
+        background: transparent;
+        border: 1px solid var(--rule);
+        cursor: pointer;
+        padding: 0.4rem 0.9rem;
+        font-family: inherit;
+      }
+      .add-tag button:hover { border-color: var(--accent); }
+      .modal-actions {
+        display: flex; justify-content: flex-end; gap: 0.5rem;
+        padding-top: 0.5rem;
+        border-top: 1px solid var(--rule);
+      }
+      .modal-empty {
+        color: var(--muted); font-style: italic;
+        padding: 0.6rem 0;
+      }
+
+      /* Year-range editor rows */
+      .year-group-edit-list {
+        display: flex; flex-direction: column; gap: 0.5rem;
+        margin-bottom: 1rem;
+      }
+      .year-group-row {
+        display: grid;
+        grid-template-columns: 5.5rem 5.5rem 1fr auto;
+        gap: 0.55rem;
+        align-items: center;
+      }
+      .year-group-row .year-input {
+        font-family: inherit; font-size: 1rem;
+        padding: 0.4rem 0.55rem;
+        border: 1px solid var(--rule);
+        background: #fff;
+        width: 100%;
+      }
+      .year-group-row .preview {
+        font-size: 0.9rem;
+        color: var(--muted);
+        font-style: italic;
+        padding: 0 0.25rem;
+      }
+      .year-group-row .preview.error {
+        color: var(--danger);
+        font-style: normal;
+      }
+      .year-group-row .remove {
+        background: transparent;
+        border: 1px solid var(--rule);
+        color: var(--muted);
+        cursor: pointer;
+        padding: 0.3rem 0.55rem;
+        font-family: inherit;
+        font-size: 0.85rem;
+      }
+      .year-group-row .remove:hover {
+        background: #f6e3d8; color: var(--danger); border-color: var(--danger);
+      }
+      .year-group-row .col-header {
+        font-size: 0.78rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .add-year-group {
+        margin-bottom: 1.25rem;
+        padding-top: 0.75rem;
+        border-top: 1px dashed var(--rule);
+      }
+      .add-year-group button {
+        background: transparent;
+        border: 1px solid var(--rule);
+        cursor: pointer;
+        padding: 0.4rem 0.9rem;
+        font-family: inherit;
+      }
+      .add-year-group button:hover { border-color: var(--accent); }
     </style>
   </head>
   <body>
     <header class="admin-header">
       <h1>Your Works</h1>
       <span class="summary" id="summary">Loading…</span>
-      <label class="size-control">
-        Thumb size
-        <input type="range" id="thumb-size" min="90" max="420" value="140" step="10" />
-      </label>
       <div class="actions">
         <span class="status" id="status"></span>
+        <button
+          class="secondary"
+          id="refresh-from-drive"
+          title="Open the Artwork folder and pull in anything new since the last check"
+        >Check Artwork Folder for Updates</button>
         <button class="primary" id="save" disabled>Save</button>
       </div>
+      <input
+        type="file"
+        id="artwork-folder-picker"
+        webkitdirectory
+        multiple
+        hidden
+      />
     </header>
+
+    <div class="toolbar">
+      <label class="field">
+        Search
+        <input type="text" id="filter-search" placeholder="Title contains…" />
+      </label>
+      <label class="field">
+        Show
+        <select id="filter-status">
+          <option value="all">All</option>
+          <option value="on">On site</option>
+          <option value="off">Off site</option>
+          <option value="new">New only</option>
+        </select>
+      </label>
+      <label class="field">
+        Year
+        <select id="filter-year">
+          <option value="">All</option>
+        </select>
+      </label>
+      <label class="field">
+        Category
+        <select id="filter-category">
+          <option value="">All</option>
+        </select>
+      </label>
+      <label class="field">
+        Sort (this view)
+        <select id="sort-view">
+          <option value="year-seq-desc">Year + Number (newest)</option>
+          <option value="year-md-desc">Year + Month/Day (newest)</option>
+          <option value="title-asc">Title A–Z</option>
+          <option value="new-first">New first</option>
+        </select>
+      </label>
+      <div class="toolbar-divider"></div>
+      <label class="field">
+        Site order
+        <select id="site-order">
+          <option value="year-sequence">By Year and Number (newest first)</option>
+          <option value="year-month">By Year and Month (newest first)</option>
+        </select>
+      </label>
+      <div class="toolbar-divider"></div>
+      <label class="field size-control">
+        Thumb
+        <input type="range" id="thumb-size" min="100" max="420" value="160" step="10" />
+      </label>
+      <div class="toolbar-divider"></div>
+      <button type="button" class="secondary toolbar-btn" id="manage-categories">Manage categories</button>
+      <button type="button" class="secondary toolbar-btn" id="manage-year-ranges">Manage year ranges</button>
+    </div>
+
     <div class="alert-banner hidden" id="alert" role="alert">
       <span id="alert-msg"></span>
       <button class="close" id="alert-close" aria-label="dismiss">×</button>
     </div>
     <main>
       <div class="work-list" id="list"></div>
+      <details class="hidden-section" id="hidden-section">
+        <summary id="hidden-summary">Hidden items (0)</summary>
+        <div id="hidden-list"></div>
+      </details>
     </main>
     <div class="lightbox" id="lightbox" role="dialog" aria-label="image preview">
       <img alt="" id="lightbox-img" />
     </div>
 
+    <div class="modal-backdrop" id="tags-modal" role="dialog" aria-modal="true" aria-label="Manage categories">
+      <div class="modal">
+        <h2>Manage categories</h2>
+        <p class="modal-intro">These are the categories you can apply to each work. Add, rename, or remove as needed.</p>
+        <div class="tag-edit-list" id="tag-edit-list"></div>
+        <div class="add-tag">
+          <input type="text" id="add-tag-input" placeholder="Add a new category…" maxlength="60" />
+          <button type="button" id="add-tag-btn">Add</button>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="secondary" id="modal-cancel">Cancel</button>
+          <button type="button" class="primary" id="modal-save">Save categories</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-backdrop" id="year-groups-modal" role="dialog" aria-modal="true" aria-label="Manage year ranges">
+      <div class="modal">
+        <h2>Manage year ranges</h2>
+        <p class="modal-intro">
+          These are the groupings under "Works" in the left menu. Each range has a min year, a max year, or both.
+          Leave a year blank for an open-ended range (e.g. "2020 and earlier" → max year 2020, min year blank).
+        </p>
+        <div class="year-group-edit-list" id="year-group-edit-list"></div>
+        <div class="add-year-group">
+          <button type="button" id="add-year-group-btn">+ Add a range</button>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="secondary" id="year-groups-cancel">Cancel</button>
+          <button type="button" class="primary" id="year-groups-save">Save year ranges</button>
+        </div>
+      </div>
+    </div>
+
     <script type="module">
-      const SECTIONS = [
-        ["paintings-2026", "Paintings, 2026"],
-        ["paintings-2025", "Paintings, 2025"],
-        ["paintings-2021-2024", "Paintings, 2021–2024"],
-        ["paintings-before-2021", "Paintings, 2020 and earlier"],
-        ["abstracts", "Abstracts"],
-        ["portraits", "Portraits"],
-        ["commissions", "Commissions"],
+      const TRASH_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>`;
+
+      const MONTHS = [
+        ["", "—"],
+        ["1", "January"], ["2", "February"], ["3", "March"], ["4", "April"],
+        ["5", "May"], ["6", "June"], ["7", "July"], ["8", "August"],
+        ["9", "September"], ["10", "October"], ["11", "November"], ["12", "December"],
       ];
 
       const $ = (id) => document.getElementById(id);
@@ -309,6 +808,15 @@ export const prerender = false;
       const sizeSlider = $("thumb-size");
       const lightbox = $("lightbox");
       const lightboxImg = $("lightbox-img");
+      const filterSearch = $("filter-search");
+      const filterStatus = $("filter-status");
+      const filterYear = $("filter-year");
+      const filterCategory = $("filter-category");
+      const sortView = $("sort-view");
+      const siteOrderSel = $("site-order");
+      const hiddenSection = $("hidden-section");
+      const hiddenSummary = $("hidden-summary");
+      const hiddenList = $("hidden-list");
 
       sizeSlider.addEventListener("input", (e) => {
         document.documentElement.style.setProperty("--thumb-size", e.target.value + "px");
@@ -319,14 +827,10 @@ export const prerender = false;
         if (e.key === "Escape") lightbox.classList.remove("open");
       });
 
-      function showAlert(msg) {
-        alertMsg.textContent = msg;
-        alertBanner.classList.remove("hidden");
-      }
+      function showAlert(msg) { alertMsg.textContent = msg; alertBanner.classList.remove("hidden"); }
       function hideAlert() { alertBanner.classList.add("hidden"); }
-
       function slugify(input) {
-        return input
+        return String(input)
           .toLowerCase()
           .normalize("NFKD")
           .replace(/[̀-ͯ]/g, "")
@@ -337,68 +841,223 @@ export const prerender = false;
       }
 
       let state = [];
+      let availableTags = [];
+      let liveYearGroups = []; // [{minYear?, maxYear?}] mirroring year-groups.json
+      let meta = { displayOrder: "year-sequence", hiddenWorks: [] };
+      // `dirty` flips to true whenever Nicholas changes anything in the
+      // picker. "Check for new files" asks for confirmation before
+      // discarding pending changes by re-scanning.
+      let dirty = false;
+      function markDirty() { dirty = true; }
+      // Hidden source folders are pruned from `state` and shown in the
+      // "Hidden items" section instead. We keep the original scanned
+      // ScannedFolder objects for the hidden ones so we can resurrect
+      // them on demand without re-scanning.
+      let hiddenScanned = []; // { folder, existing }
+      let scannedAll = []; // [{folder, existing}] for everything
 
-      function setFileState(work, filename, next) {
-        if (next === "main") {
-          const prevPrimary = work.primary;
-          if (prevPrimary && prevPrimary !== filename) {
-            work.additional.add(prevPrimary);
-          }
-          work.primary = filename;
-          work.additional.delete(filename);
-        } else if (next === "show") {
-          if (work.primary === filename) work.primary = "";
-          work.additional.add(filename);
-        } else {
-          if (work.primary === filename) work.primary = "";
-          work.additional.delete(filename);
-        }
-      }
+      [filterSearch, filterStatus, filterYear, filterCategory, sortView].forEach((el) => {
+        el.addEventListener("input", render);
+        el.addEventListener("change", render);
+      });
+      siteOrderSel.addEventListener("change", (e) => {
+        meta.displayOrder = e.target.value;
+        markDirty();
+      });
+
+      // Catch most mutations via event delegation: any input/change inside
+      // the work list means Nicholas edited something. Click-based mutations
+      // (reorder arrows, trash, tag chips) also call markDirty() explicitly.
+      list.addEventListener("input", markDirty);
+      list.addEventListener("change", markDirty);
 
       async function load() {
         status.textContent = "Loading…";
         try {
           const r = await fetch("/api/content.json");
           if (!r.ok) throw new Error("HTTP " + r.status);
-          const { folders, currentWorks } = await r.json();
+          const data = await r.json();
+          availableTags = Array.isArray(data.tags) ? data.tags : [];
+          liveYearGroups = Array.isArray(data.yearGroups) ? data.yearGroups : [];
+          meta = {
+            displayOrder:
+              data.meta?.displayOrder === "year-month"
+                ? "year-month"
+                : "year-sequence",
+            hiddenWorks: Array.isArray(data.meta?.hiddenWorks) ? data.meta.hiddenWorks.slice() : [],
+          };
+          siteOrderSel.value = meta.displayOrder;
+
+          const folders = Array.isArray(data.folders) ? data.folders : [];
+          const currentWorks = Array.isArray(data.currentWorks) ? data.currentWorks : [];
           const bySource = new Map();
           for (const cw of currentWorks) {
             const src = (cw.sourceFolder || "").replace(/^content\//, "");
             if (src) bySource.set(src, cw);
           }
-          state = folders.map((f) => {
-            const existing = bySource.get(f.relPath);
-            const images = f.files.filter((file) => file.isImage);
-            const included = !!existing;
-            const primaryBasename = existing
-              ? (existing.primaryImage || "").split("/").pop()
-              : images[0]?.name || "";
-            const additionalBasenames = new Set(
-              (existing?.additionalImages || []).map((p) => p.split("/").pop())
-            );
-            return {
-              relPath: f.relPath,
-              folderName: f.name,
-              slug: existing?.slug || f.guessedSlug,
-              title: existing?.title || f.guessedTitle,
-              year: existing?.year ?? f.guessedYear ?? 2025,
-              section: existing?.section || f.guessedSection || "paintings-2025",
-              featured: !!existing?.featured,
-              included,
-              primary: primaryBasename,
-              additional: additionalBasenames,
-              files: f.files,
-              hasImages: images.length > 0,
-            };
-          });
+
+          scannedAll = folders.map((f) => ({ folder: f, existing: bySource.get(f.relPath) }));
+
+          // Partition into visible vs hidden by meta.hiddenWorks.
+          const hiddenSet = new Set(meta.hiddenWorks);
+          state = [];
+          hiddenScanned = [];
+          for (const entry of scannedAll) {
+            if (hiddenSet.has(entry.folder.relPath)) {
+              hiddenScanned.push(entry);
+            } else {
+              state.push(buildWorkState(entry.folder, entry.existing));
+            }
+          }
+
           render();
+          renderHidden();
+          populateYearFilter();
+          populateCategoryFilter();
           saveBtn.disabled = false;
           status.textContent = "";
           status.className = "status";
+          // Just-loaded state matches what's on disk — no unsaved changes.
+          dirty = false;
         } catch (e) {
           status.textContent = "";
           showAlert("Failed to load folders: " + (e.message || e));
+          console.error(e);
         }
+      }
+
+      function buildWorkState(f, existing) {
+        // For each scanned image, compute its path relative to the work's
+        // source folder. For loose-file works the "path" is just the
+        // filename; for folder works it's everything after the folder
+        // prefix, which preserves subfolder structure (e.g. "Raleigh Final
+        // Photos edited/X.jpg"). This is what `save` uses to re-find the
+        // source on disk later.
+        const folderPrefix = f.isLooseFile ? "" : (f.relPath + "/");
+        const imagesAvailable = f.files
+          .filter((file) => file.isImage)
+          .map((file) => {
+            let sourceFile = file.name;
+            if (!f.isLooseFile && file.relPath.startsWith(folderPrefix)) {
+              sourceFile = file.relPath.slice(folderPrefix.length);
+            }
+            return { name: file.name, sourceFile };
+          });
+        const bySourceFile = new Map();
+        const byName = new Map();
+        for (const i of imagesAvailable) {
+          if (!bySourceFile.has(i.sourceFile)) bySourceFile.set(i.sourceFile, i);
+          if (!byName.has(i.name)) byName.set(i.name, i);
+        }
+
+        // Filter out hidden images
+        const hiddenImageSet = new Set(
+          Array.isArray(existing?.hiddenImages) ? existing.hiddenImages : []
+        );
+        const visibleAvailable = imagesAvailable.filter((i) => !hiddenImageSet.has(i.name));
+
+        // Default ordering for a brand-new (unsaved) work: images whose
+        // filename contains "final" come first, preserving their relative
+        // order. Lets Nicholas drop a folder with multiple progress photos
+        // and a "..._Final.jpg" and have the final shown first
+        // automatically. For already-saved works we never reshuffle —
+        // the saved order is his choice.
+        function sortFinalsFirst(list) {
+          return list
+            .map((item, idx) => ({ item, idx, isFinal: /final/i.test(item.name) }))
+            .sort((a, b) => {
+              if (a.isFinal !== b.isFinal) return a.isFinal ? -1 : 1;
+              return a.idx - b.idx;
+            })
+            .map((x) => x.item);
+        }
+        const visibleAvailableOrdered = existing
+          ? visibleAvailable
+          : sortFinalsFirst(visibleAvailable);
+
+        // Build the ordered image list. Start with saved order, drop any
+        // missing files, then append any newly-scanned images not yet
+        // listed (those become "new" flagged).
+        const savedImages = Array.isArray(existing?.images) ? existing.images : [];
+        const orderedImages = [];
+        // Dedup by sourceFile so two files in different subfolders with
+        // the same basename can both appear.
+        const seenSourceFiles = new Set();
+        for (const im of savedImages) {
+          // Prefer matching by sourceFile (handles subfolder structure
+          // correctly); fall back to basename for legacy saves that
+          // didn't track sourceFile.
+          let scanned = null;
+          if (typeof im.sourceFile === "string" && im.sourceFile.length > 0) {
+            scanned = bySourceFile.get(im.sourceFile);
+          }
+          if (!scanned) scanned = byName.get(im.filename);
+          if (!scanned) continue;
+          if (hiddenImageSet.has(scanned.name)) continue;
+          if (seenSourceFiles.has(scanned.sourceFile)) continue;
+          const cap = typeof im.caption === "string" ? im.caption : "";
+          orderedImages.push({
+            filename: scanned.name,
+            sourceFile: scanned.sourceFile,
+            shown: im.shown !== false,
+            featured: !!im.featured,
+            caption: cap,
+            captionEnabled: cap.trim().length > 0,
+            status: im.status === "nfs" || im.status === "sold" ? im.status : undefined,
+            isNew: false,
+          });
+          seenSourceFiles.add(scanned.sourceFile);
+        }
+        for (const i of visibleAvailableOrdered) {
+          if (!seenSourceFiles.has(i.sourceFile)) {
+            orderedImages.push({
+              filename: i.name,
+              sourceFile: i.sourceFile,
+              shown: !existing && orderedImages.length === 0,
+              featured: false,
+              caption: "",
+              captionEnabled: false,
+              status: undefined,
+              isNew: !!existing,
+            });
+            seenSourceFiles.add(i.sourceFile);
+          }
+        }
+        // Enforce: leftmost image is always shown.
+        if (orderedImages.length > 0) orderedImages[0].shown = true;
+
+        return {
+          relPath: f.relPath,
+          folderName: f.name,
+          isLooseFile: !!f.isLooseFile,
+          slug: existing?.slug || f.guessedSlug || "",
+          title: existing?.title ?? (f.guessedTitle ?? ""),
+          year: pickNumber(existing?.year, f.guessedYear),
+          month: pickNumber(existing?.month, f.guessedMonth),
+          day: pickNumber(existing?.day, f.guessedDay),
+          sequence: pickNumber(existing?.sequence, f.guessedSequence),
+          caption: existing?.caption ?? "",
+          captionEnabled: !!(existing?.caption && String(existing.caption).trim().length > 0),
+          // "Included" means the user has flagged the work for the public site.
+          // Drafts (existing but published=false) load with included=false so
+          // the master toggle correctly reflects the saved state.
+          included: existing ? existing.published !== false : false,
+          tags: new Set(Array.isArray(existing?.tags) ? existing.tags : []),
+          images: orderedImages,
+          hiddenImages: new Set(
+            Array.isArray(existing?.hiddenImages) ? existing.hiddenImages : []
+          ),
+          files: f.files,
+          hasImages: imagesAvailable.length > 0 - hiddenImageSet.size,
+          isNew: !existing,
+        };
+      }
+
+      function pickNumber(...vals) {
+        for (const v of vals) {
+          if (typeof v === "number" && Number.isFinite(v)) return v;
+        }
+        return "";
       }
 
       function validateState() {
@@ -412,18 +1071,18 @@ export const prerender = false;
             errors.push(`${w.folderName}: bad title`);
             continue;
           }
-          if (!w.title.trim()) {
+          if (!String(w.title).trim()) {
             w._error = "Title cannot be empty.";
             errors.push(`${w.folderName}: empty title`);
             continue;
           }
-          if (!w.primary) {
-            w._error = "Pick a Primary photo (no image is selected).";
-            errors.push(`${w.folderName}: no primary photo selected`);
+          if (w.images.length === 0) {
+            w._error = "This work has no images.";
+            errors.push(`${w.folderName}: no images`);
             continue;
           }
           if (slugs.has(w.slug)) {
-            w._error = `Duplicate slug “${w.slug}” — already used by “${slugs.get(w.slug)}”. Change one of the titles.`;
+            w._error = `Duplicate title slug “${w.slug}” — change one of the titles.`;
             errors.push(`${w.folderName}: duplicate slug ${w.slug}`);
             continue;
           }
@@ -432,17 +1091,129 @@ export const prerender = false;
         return errors;
       }
 
+      function populateYearFilter() {
+        const years = new Set();
+        for (const w of state) {
+          if (typeof w.year === "number") years.add(w.year);
+        }
+        const sorted = [...years].sort((a, b) => b - a);
+        const prev = filterYear.value;
+        filterYear.innerHTML =
+          `<option value="">All</option>` +
+          sorted.map((y) => `<option value="${y}">${y}</option>`).join("");
+        if (prev && sorted.includes(parseInt(prev, 10))) filterYear.value = prev;
+      }
+
+      function populateCategoryFilter() {
+        // Use the live category vocabulary so filter options follow what
+        // Nicholas has actually defined. Add "(uncategorized)" so he can
+        // sweep through tagless works too.
+        const prev = filterCategory.value;
+        const opts = [
+          `<option value="">All</option>`,
+          `<option value="__none__">(uncategorized)</option>`,
+          ...availableTags.map((t) => `<option value="${escapeAttr(t.id)}">${escapeHtml(t.label)}</option>`),
+        ];
+        filterCategory.innerHTML = opts.join("");
+        // Restore previous selection if it's still valid.
+        const validValues = new Set([
+          "",
+          "__none__",
+          ...availableTags.map((t) => t.id),
+        ]);
+        filterCategory.value = validValues.has(prev) ? prev : "";
+      }
+
+      function visibleState() {
+        const text = filterSearch.value.trim().toLowerCase();
+        const stat = filterStatus.value;
+        const yr = filterYear.value === "" ? null : parseInt(filterYear.value, 10);
+        const cat = filterCategory.value;
+
+        let list = state.filter((w) => {
+          if (text && !String(w.title).toLowerCase().includes(text) && !w.folderName.toLowerCase().includes(text)) return false;
+          if (stat === "on" && !w.included) return false;
+          if (stat === "off" && w.included) return false;
+          if (stat === "new" && !w.isNew) return false;
+          if (yr !== null && w.year !== yr) return false;
+          if (cat === "__none__") {
+            if (w.tags.size > 0) return false;
+          } else if (cat) {
+            if (!w.tags.has(cat)) return false;
+          }
+          return true;
+        });
+
+        const sort = sortView.value;
+        list = list.slice();
+        if (sort === "title-asc") {
+          list.sort((a, b) => String(a.title).localeCompare(String(b.title)));
+        } else if (sort === "year-md-desc") {
+          list.sort((a, b) => cmpYearMD(a, b));
+        } else if (sort === "new-first") {
+          list.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));
+        } else {
+          list.sort((a, b) => cmpYearSeq(a, b));
+        }
+        return list;
+      }
+
+      function cmpYearSeq(a, b) {
+        const ay = (typeof a.year === "number") ? a.year : 0;
+        const by = (typeof b.year === "number") ? b.year : 0;
+        if (ay !== by) return by - ay;
+        const aS = (typeof a.sequence === "number") ? a.sequence : 0;
+        const bS = (typeof b.sequence === "number") ? b.sequence : 0;
+        if (aS !== bS) return bS - aS;
+        return String(a.title).localeCompare(String(b.title));
+      }
+      function cmpYearMD(a, b) {
+        const ay = (typeof a.year === "number") ? a.year : 0;
+        const by = (typeof b.year === "number") ? b.year : 0;
+        if (ay !== by) return by - ay;
+        const aM = (typeof a.month === "number") ? a.month : 0;
+        const bM = (typeof b.month === "number") ? b.month : 0;
+        if (aM !== bM) return bM - aM;
+        const aD = (typeof a.day === "number") ? a.day : 0;
+        const bD = (typeof b.day === "number") ? b.day : 0;
+        if (aD !== bD) return bD - aD;
+        // Month/day unknown (or tied) — fall back to Order in year so
+        // undated works still slot into a sensible spot.
+        const aS = (typeof a.sequence === "number") ? a.sequence : 0;
+        const bS = (typeof b.sequence === "number") ? b.sequence : 0;
+        if (aS !== bS) return bS - aS;
+        return String(a.title).localeCompare(String(b.title));
+      }
+
       function render() {
         const total = state.length;
         const included = state.filter((s) => s.included).length;
-        const featured = state.filter((s) => s.included && s.featured).length;
-        summary.textContent = `${total} folders scanned · ${included} on site · ${featured} on home page`;
+        const featuredImgCount = state
+          .filter((s) => s.included)
+          .reduce(
+            (n, s) => n + s.images.filter((i) => i.featured && i.shown).length,
+            0
+          );
+        const newCount = state.filter((s) => s.isNew).length;
+        const newPiece = newCount > 0 ? ` · ${newCount} new` : "";
+        const visible = visibleState();
+        const visiblePiece = visible.length === total ? "" : ` · ${visible.length} shown`;
+        summary.textContent = `${total} scanned · ${included} on site · ${featuredImgCount} image${featuredImgCount === 1 ? "" : "s"} on home page${newPiece}${visiblePiece}`;
 
         validateState();
 
         list.innerHTML = "";
-        for (const work of state) {
-          list.appendChild(renderWork(work));
+        if (visible.length === 0) {
+          const e = document.createElement("p");
+          e.className = "empty-state";
+          e.textContent = total === 0
+            ? "No folders found in the Artworks directory yet."
+            : "No works match this filter.";
+          list.appendChild(e);
+        } else {
+          for (const work of visible) {
+            list.appendChild(renderWork(work));
+          }
         }
       }
 
@@ -450,81 +1221,193 @@ export const prerender = false;
         const card = document.createElement("div");
         let cls = "work-card " + (work.included ? "included" : "excluded");
         if (work._error) cls += " has-error";
+        if (work.isNew) cls += " is-new";
         card.className = cls;
+
+        // Trash icon (per-work) — small, icon-only. Click = hide. Permanent
+        // delete is only available later from the Hidden items section.
+        const trash = document.createElement("button");
+        trash.type = "button";
+        trash.className = "work-trash";
+        trash.title = "Hide this work";
+        trash.setAttribute("aria-label", "Hide this work");
+        trash.innerHTML = TRASH_SVG;
+        trash.addEventListener("click", () => {
+          if (!confirm(`Hide "${work.title || work.folderName}" from the picker? You can restore it from the Hidden items section.`)) return;
+          // Move from state to hiddenScanned and add to meta.hiddenWorks.
+          const idx = state.indexOf(work);
+          if (idx >= 0) state.splice(idx, 1);
+          if (!meta.hiddenWorks.includes(work.relPath)) meta.hiddenWorks.push(work.relPath);
+          // Also keep a representation for restore.
+          const scanned = scannedAll.find((s) => s.folder.relPath === work.relPath);
+          if (scanned) hiddenScanned.push(scanned);
+          markDirty();
+          render();
+          renderHidden();
+        });
+        card.appendChild(trash);
+
+        // LEFT rail — Show on website toggle only. "Also on home page" is
+        // now per-image (set on each image card below).
+        const rail = document.createElement("div");
+        rail.className = "work-rail";
+        const labelHtml = work.hasImages
+          ? "Show on website"
+          : `Show on website<br><span style="font-size:0.8rem;font-style:italic;">(no images)</span>`;
+        const featuredImageCount = work.images.filter((i) => i.featured && i.shown).length;
+        const featNote = featuredImageCount > 0
+          ? `<span style="font-size:0.8rem;color:var(--muted);text-align:center;font-style:italic;">${featuredImageCount} image${featuredImageCount === 1 ? "" : "s"} on home</span>`
+          : "";
+        rail.innerHTML = `
+          <label class="show-toggle">
+            <input type="checkbox" data-action="include" ${work.included ? "checked" : ""} ${work.hasImages ? "" : "disabled"} />
+            <span class="show-toggle-label">${labelHtml}</span>
+          </label>
+          ${featNote}
+          ${work.isNew ? `<span class="new-badge">New · needs review</span>` : ""}
+        `;
+        card.appendChild(rail);
+
+        // RIGHT body
+        const body = document.createElement("div");
+        body.className = "work-body";
 
         const head = document.createElement("div");
         head.className = "work-head";
+        const imageCount = work.files.filter((f) => f.isImage).length;
         head.innerHTML = `
           <div class="name">
-            ${escapeHtml(work.title || "(untitled)")}
-            <span class="folder">${escapeHtml(work.folderName)} · ${work.files.filter(f=>f.isImage).length} image${work.files.filter(f=>f.isImage).length===1?"":"s"}</span>
+            ${escapeHtml(work.title || "(untitled — add a title to publish)")}
+            <span class="folder">${escapeHtml(work.folderName)} · ${imageCount} image${imageCount === 1 ? "" : "s"}${work.isLooseFile ? " · loose file" : ""}</span>
           </div>
-          <label class="include">
-            <input type="checkbox" data-action="include" ${work.included ? "checked" : ""} ${work.hasImages ? "" : "disabled"} />
-            <span>Show on site${work.hasImages ? "" : " (no images)"}</span>
-          </label>
-          <label class="include">
-            <input type="checkbox" data-action="featured" ${work.featured ? "checked" : ""} ${work.included ? "" : "disabled"} />
-            <span>Show on home page</span>
-          </label>
         `;
-        card.appendChild(head);
+        body.appendChild(head);
 
         if (work._error) {
           const err = document.createElement("p");
           err.className = "work-error";
           err.textContent = "⚠ " + work._error;
-          card.appendChild(err);
+          body.appendChild(err);
         }
 
         const controls = document.createElement("div");
         controls.className = "controls";
         const slugInvalid = work.included && (!work.slug || !/^[a-z0-9][a-z0-9-]*$/.test(work.slug));
+        const monthSel = MONTHS
+          .map(([v, label]) => `<option value="${v}"${String(work.month) === v ? " selected" : ""}>${label}</option>`)
+          .join("");
         controls.innerHTML = `
           <label>Title
             <input type="text" data-action="title" value="${escapeAttr(work.title)}" class="${slugInvalid ? "invalid" : ""}" />
           </label>
-          <label>Section
-            <select data-action="section">
-              ${SECTIONS.map(([id, label]) => `<option value="${id}"${id === work.section ? " selected" : ""}>${label}</option>`).join("")}
-            </select>
-          </label>
           <label>Year
-            <input type="number" min="1900" max="2100" data-action="year" value="${work.year}" />
+            <input type="number" min="1900" max="2100" data-action="year" value="${work.year}" placeholder="—" />
+          </label>
+          <label>Month
+            <select data-action="month">${monthSel}</select>
+          </label>
+          <label>Day
+            <input type="number" min="1" max="31" data-action="day" value="${work.day}" placeholder="—" />
+          </label>
+          <label>Order in year
+            <input type="number" min="0" max="9999" data-action="sequence" value="${work.sequence}" placeholder="—" />
           </label>
         `;
-        card.appendChild(controls);
+        body.appendChild(controls);
 
-        const files = document.createElement("div");
-        files.className = "files";
-        for (const f of work.files) {
-          files.appendChild(renderFile(work, f));
+        // Caption toggle + textarea (textarea only visible when toggle is checked)
+        const captionWrap = document.createElement("div");
+        captionWrap.className = "caption-row";
+        captionWrap.innerHTML = `
+          <label class="caption-toggle">
+            <input type="checkbox" data-action="caption-enabled" ${work.captionEnabled ? "checked" : ""} />
+            <span>Caption (shown under the painting on the website)</span>
+          </label>
+          <textarea data-action="caption" rows="2" placeholder="Optional — e.g. medium, dimensions, a short note" ${work.captionEnabled ? "" : "hidden"}>${escapeHtml(work.caption || "")}</textarea>
+        `;
+        body.appendChild(captionWrap);
+
+        if (availableTags.length > 0) {
+          const tagsRow = document.createElement("div");
+          tagsRow.className = "tags-row";
+          tagsRow.innerHTML =
+            `<span class="tags-label">Categories</span>` +
+            availableTags
+              .map(
+                (t) =>
+                  `<button type="button" data-tag-id="${escapeAttr(t.id)}" class="tag-chip${work.tags.has(t.id) ? " on" : ""}" aria-pressed="${work.tags.has(t.id)}">${escapeHtml(t.label)}</button>`
+              )
+              .join("");
+          tagsRow.querySelectorAll("[data-tag-id]").forEach((btn) => {
+            btn.addEventListener("click", () => {
+              const id = btn.dataset.tagId;
+              if (work.tags.has(id)) work.tags.delete(id);
+              else work.tags.add(id);
+              btn.classList.toggle("on");
+              btn.setAttribute("aria-pressed", String(work.tags.has(id)));
+              markDirty();
+            });
+          });
+          body.appendChild(tagsRow);
         }
-        card.appendChild(files);
 
+        const strip = document.createElement("div");
+        strip.className = "images-strip";
+        work.images.forEach((img, idx) => {
+          strip.appendChild(renderImage(work, img, idx));
+        });
+        for (const f of work.files) {
+          if (!f.isImage) strip.appendChild(renderNonImage(f));
+        }
+        body.appendChild(strip);
+
+        card.appendChild(body);
+
+        // rail handlers
         card.querySelector('[data-action="include"]').addEventListener("change", (e) => {
           work.included = e.target.checked;
-          if (!work.included) work.featured = false;
           render();
         });
-        card.querySelector('[data-action="featured"]').addEventListener("change", (e) => {
-          work.featured = e.target.checked;
-          render();
-        });
+
+        // body handlers
         card.querySelector('[data-action="title"]').addEventListener("input", (e) => {
           work.title = e.target.value;
           work.slug = slugify(work.title);
-          // Re-render only this card's head + error to avoid losing focus
-          const oldName = card.querySelector(".name");
-          oldName.firstChild.textContent = work.title || "(untitled)";
+          const nameEl = card.querySelector(".name");
+          nameEl.firstChild.textContent = work.title || "(untitled — add a title to publish)";
           validateState();
           renderInlineError(card, work);
         });
-        card.querySelector('[data-action="section"]').addEventListener("change", (e) => {
-          work.section = e.target.value;
-        });
         card.querySelector('[data-action="year"]').addEventListener("input", (e) => {
-          work.year = parseInt(e.target.value, 10) || work.year;
+          const v = parseInt(e.target.value, 10);
+          work.year = Number.isFinite(v) ? v : "";
+        });
+        card.querySelector('[data-action="month"]').addEventListener("change", (e) => {
+          work.month = e.target.value === "" ? "" : parseInt(e.target.value, 10);
+        });
+        card.querySelector('[data-action="day"]').addEventListener("input", (e) => {
+          const v = parseInt(e.target.value, 10);
+          work.day = Number.isFinite(v) ? v : "";
+        });
+        card.querySelector('[data-action="sequence"]').addEventListener("input", (e) => {
+          const v = parseInt(e.target.value, 10);
+          work.sequence = Number.isFinite(v) ? v : "";
+        });
+        const captionToggleEl = card.querySelector('[data-action="caption-enabled"]');
+        const captionTextarea = card.querySelector('[data-action="caption"]');
+        captionToggleEl.addEventListener("change", (e) => {
+          work.captionEnabled = e.target.checked;
+          if (work.captionEnabled) {
+            captionTextarea.hidden = false;
+            captionTextarea.focus();
+          } else {
+            captionTextarea.hidden = true;
+            work.caption = "";
+            captionTextarea.value = "";
+          }
+        });
+        captionTextarea.addEventListener("input", (e) => {
+          work.caption = e.target.value;
         });
 
         return card;
@@ -539,7 +1422,7 @@ export const prerender = false;
             const err = document.createElement("p");
             err.className = "work-error";
             err.textContent = "⚠ " + work._error;
-            card.querySelector(".work-head").after(err);
+            card.querySelector(".work-body .work-head").after(err);
           }
         } else {
           card.classList.remove("has-error");
@@ -547,48 +1430,246 @@ export const prerender = false;
         }
       }
 
-      function renderFile(work, file) {
+      function renderImage(work, img, idx) {
         const el = document.createElement("div");
-        const isPrimary = file.name === work.primary;
-        const isAdditional = work.additional.has(file.name);
-        let cls = "file";
-        if (!file.isImage) cls += " non-image";
-        if (isPrimary) cls += " primary";
-        else if (isAdditional) cls += " additional";
+        // Use sourceFile when available so we serve the actual file even
+        // when it's nested in a subfolder. Fall back to filename for the
+        // legacy case where no sourceFile is recorded.
+        const sub = img.sourceFile || img.filename;
+        const filePath = work.isLooseFile ? work.relPath : (work.relPath + "/" + sub);
+        let cls = "image-card";
+        if (idx === 0) cls += " is-first";
+        if (img.isNew) cls += " is-new";
+        if (!img.shown && idx !== 0) cls += " not-included";
         el.className = cls;
 
-        if (file.isImage) {
-          const thumbSrc = "/api/thumb?path=" + encodeURIComponent(file.relPath) + "&size=600";
-          const fullSrc = "/api/image?path=" + encodeURIComponent(file.relPath);
-          const state = isPrimary ? "main" : (isAdditional ? "show" : "hide");
-          el.innerHTML = `
-            <div class="thumb-wrap"><img src="${thumbSrc}" loading="lazy" alt="" data-full="${fullSrc}" /></div>
-            <div class="name">${escapeHtml(file.name)}</div>
-            <div class="state-picker" role="group" aria-label="image state">
-              <button type="button" data-state-btn="hide" class="state-hide ${state === "hide" ? "active" : ""}" title="Don't show on the site (archive only)">hide</button>
-              <button type="button" data-state-btn="show" class="state-show ${state === "show" ? "active" : ""}" title="Show on this work's detail page">show</button>
-              <button type="button" data-state-btn="main" class="state-main ${state === "main" ? "active" : ""}" title="The main image — used in galleries and the home carousel">main</button>
+        const thumbSrc = "/api/thumb?path=" + encodeURIComponent(filePath) + "&size=600";
+        const fullSrc = "/api/image?path=" + encodeURIComponent(filePath);
+
+        const orderLabel = idx === 0 ? "Display image" : `#${idx + 1}`;
+        const isLeft = idx === 0;
+        // Featured only meaningful when shown; force off otherwise.
+        if (!img.shown) img.featured = false;
+        const featDisabled = !img.shown;
+        const nfsChecked = img.status === "nfs";
+        const soldChecked = img.status === "sold";
+        el.innerHTML = `
+          <div class="badge-row">
+            <span class="order-label">${orderLabel}</span>
+            ${img.isNew ? `<span class="new-tag">New</span>` : ""}
+          </div>
+          <button type="button" class="image-trash" title="Hide this image" aria-label="Hide this image">${TRASH_SVG}</button>
+          <div class="thumb-wrap"><img src="${thumbSrc}" loading="lazy" alt="" data-full="${fullSrc}" /></div>
+          <div class="name">${escapeHtml(img.filename)}</div>
+          <label class="image-caption-toggle">
+            <input type="checkbox" data-action="img-caption-enabled" ${img.captionEnabled ? "checked" : ""} />
+            <span>Caption</span>
+          </label>
+          <input type="text" class="image-caption-input" data-action="img-caption" placeholder="Subtitle / caption" value="${escapeAttr(img.caption || "")}" ${img.captionEnabled ? "" : "hidden"} />
+          <div class="image-extras">
+            <div class="row">
+              <label><input type="checkbox" data-action="featured" ${img.featured ? "checked" : ""} ${featDisabled ? "disabled" : ""} /><span>Also on home page</span></label>
             </div>
-          `;
-          el.querySelector("img").addEventListener("click", (e) => {
-            lightboxImg.src = e.target.dataset.full;
-            lightbox.classList.add("open");
+            <div class="row">
+              <label><input type="checkbox" data-action="status-nfs" ${nfsChecked ? "checked" : ""} /><span>NFS</span></label>
+              <label><input type="checkbox" data-action="status-sold" ${soldChecked ? "checked" : ""} /><span>Sold</span></label>
+            </div>
+          </div>
+          <div class="image-controls">
+            <button type="button" class="reorder-btn jump-first" data-action="to-first" title="Move to first" ${idx === 0 ? "disabled" : ""}>⇤</button>
+            <button type="button" class="reorder-btn" data-dir="-1" title="Move left" ${idx === 0 ? "disabled" : ""}>←</button>
+            <label class="image-shown-toggle">
+              <input type="checkbox" data-action="shown" ${img.shown ? "checked" : ""} ${isLeft ? "disabled" : ""} />
+              <span>${isLeft ? "Shown (display)" : "Show"}</span>
+            </label>
+            <button type="button" class="reorder-btn" data-dir="+1" title="Move right" ${idx === work.images.length - 1 ? "disabled" : ""}>→</button>
+          </div>
+        `;
+        el.querySelector("img").addEventListener("click", (e) => {
+          lightboxImg.src = e.target.dataset.full;
+          lightbox.classList.add("open");
+        });
+        const shownCb = el.querySelector('[data-action="shown"]');
+        if (shownCb && !isLeft) {
+          shownCb.addEventListener("change", (e) => {
+            img.shown = e.target.checked;
+            if (!img.shown) img.featured = false;
+            render();
           });
-          el.querySelectorAll("[data-state-btn]").forEach((btn) => {
-            btn.addEventListener("click", () => {
-              const next = btn.dataset.stateBtn;
-              setFileState(work, file.name, next);
-              render();
-            });
-          });
-        } else {
-          el.innerHTML = `
-            <div class="thumb-wrap" style="color:var(--muted);font-style:italic;">non-image</div>
-            <div class="name">${escapeHtml(file.name)}</div>
-            <div class="state-picker" aria-hidden="true" style="visibility:hidden;"></div>
-          `;
         }
+        el.querySelectorAll(".reorder-btn[data-dir]").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const dir = parseInt(btn.dataset.dir, 10);
+            const target = idx + dir;
+            if (target < 0 || target >= work.images.length) return;
+            const [moved] = work.images.splice(idx, 1);
+            work.images.splice(target, 0, moved);
+            if (work.images[0]) work.images[0].shown = true;
+            markDirty();
+            render();
+          });
+        });
+        // "Move to first" — pulls this image to position 0 in one click;
+        // everything else shifts right by one. Avoids tedious ← clicks
+        // when promoting a final from deep in a long image list.
+        const toFirstBtn = el.querySelector('[data-action="to-first"]');
+        if (toFirstBtn) {
+          toFirstBtn.addEventListener("click", () => {
+            if (idx === 0) return;
+            const [moved] = work.images.splice(idx, 1);
+            work.images.unshift(moved);
+            // New leftmost is always shown; the rule applies whether it
+            // was previously shown or not.
+            if (work.images[0]) work.images[0].shown = true;
+            markDirty();
+            render();
+          });
+        }
+        el.querySelector(".image-trash").addEventListener("click", () => {
+          if (!confirm(`Hide image "${img.filename}" from this work? You can restore it from the work's hidden-image list at the bottom.`)) return;
+          work.hiddenImages.add(img.filename);
+          const ix = work.images.indexOf(img);
+          if (ix >= 0) work.images.splice(ix, 1);
+          if (work.images[0]) work.images[0].shown = true;
+          markDirty();
+          render();
+        });
+        const imgCaptionToggleEl = el.querySelector('[data-action="img-caption-enabled"]');
+        const imgCaptionInput = el.querySelector('[data-action="img-caption"]');
+        imgCaptionToggleEl.addEventListener("change", (e) => {
+          img.captionEnabled = e.target.checked;
+          if (img.captionEnabled) {
+            imgCaptionInput.hidden = false;
+            imgCaptionInput.focus();
+          } else {
+            imgCaptionInput.hidden = true;
+            img.caption = "";
+            imgCaptionInput.value = "";
+          }
+        });
+        imgCaptionInput.addEventListener("input", (e) => {
+          img.caption = e.target.value;
+        });
+        el.querySelector('[data-action="featured"]').addEventListener("change", (e) => {
+          img.featured = e.target.checked;
+          render();
+        });
+        const nfsBox = el.querySelector('[data-action="status-nfs"]');
+        const soldBox = el.querySelector('[data-action="status-sold"]');
+        nfsBox.addEventListener("change", (e) => {
+          if (e.target.checked) {
+            img.status = "nfs";
+            soldBox.checked = false;
+          } else if (img.status === "nfs") {
+            img.status = undefined;
+          }
+          render();
+        });
+        soldBox.addEventListener("change", (e) => {
+          if (e.target.checked) {
+            img.status = "sold";
+            nfsBox.checked = false;
+          } else if (img.status === "sold") {
+            img.status = undefined;
+          }
+          render();
+        });
         return el;
+      }
+
+      function renderNonImage(file) {
+        const el = document.createElement("div");
+        el.className = "image-card non-image";
+        el.innerHTML = `
+          <div class="thumb-wrap" style="color:var(--muted);font-style:italic;">non-image</div>
+          <div class="name">${escapeHtml(file.name)}</div>
+        `;
+        return el;
+      }
+
+      function renderHidden() {
+        const items = [];
+        // Hidden works
+        for (const h of hiddenScanned) {
+          items.push({
+            kind: "work",
+            relPath: h.folder.relPath,
+            label: h.folder.name + " (whole work)",
+          });
+        }
+        // Hidden images, scoped to each visible work
+        for (const w of state) {
+          for (const fn of w.hiddenImages) {
+            items.push({
+              kind: "image",
+              workRelPath: w.relPath,
+              filename: fn,
+              label: `${w.title || w.folderName} → ${fn}`,
+            });
+          }
+        }
+        hiddenSummary.textContent = `Hidden items (${items.length})`;
+        if (items.length === 0) {
+          hiddenSection.removeAttribute("open");
+          hiddenList.innerHTML = `<p style="color:var(--muted);font-style:italic;margin:0.5rem 0;">Nothing hidden.</p>`;
+          return;
+        }
+        hiddenList.innerHTML = "";
+        for (const it of items) {
+          const row = document.createElement("div");
+          row.className = "hidden-row";
+          // Hide-only by design: the admin never deletes from Drive.
+          // To remove a file permanently, Nicholas deletes it directly
+          // in Google Drive; the next scan picks up the deletion.
+          row.innerHTML = `
+            <span>${escapeHtml(it.label)}</span>
+            <span class="actions">
+              <button type="button" class="restore">Restore</button>
+            </span>
+          `;
+          row.querySelector(".restore").addEventListener("click", () => {
+            if (it.kind === "work") {
+              meta.hiddenWorks = meta.hiddenWorks.filter((x) => x !== it.relPath);
+              const idx = hiddenScanned.findIndex((h) => h.folder.relPath === it.relPath);
+              if (idx >= 0) {
+                const [restored] = hiddenScanned.splice(idx, 1);
+                state.push(buildWorkState(restored.folder, restored.existing));
+              }
+            } else {
+              const w = state.find((s) => s.relPath === it.workRelPath);
+              if (w) {
+                w.hiddenImages.delete(it.filename);
+                if (!w.images.some((im) => im.filename === it.filename)) {
+                  // Derive sourceFile from the scanned file list so the
+                  // restored image works if it lives in a subfolder.
+                  const scanned = w.files.find((f) => f.isImage && f.name === it.filename);
+                  let sourceFile = it.filename;
+                  if (scanned && !w.isLooseFile) {
+                    const prefix = w.relPath + "/";
+                    if (scanned.relPath.startsWith(prefix)) {
+                      sourceFile = scanned.relPath.slice(prefix.length);
+                    }
+                  }
+                  w.images.push({
+                    filename: it.filename,
+                    sourceFile,
+                    shown: false,
+                    featured: false,
+                    caption: "",
+                    captionEnabled: false,
+                    status: undefined,
+                    isNew: true,
+                  });
+                }
+              }
+            }
+            markDirty();
+            render();
+            renderHidden();
+            populateYearFilter();
+          });
+          hiddenList.appendChild(row);
+        }
       }
 
       async function save() {
@@ -602,20 +1683,38 @@ export const prerender = false;
           showAlert("Cannot save — fix these first:\n• " + errors.join("\n• "));
           return;
         }
-        const works = state
-          .filter((s) => s.included)
-          .map((s) => ({
-            slug: s.slug,
-            title: s.title,
-            year: s.year,
-            section: s.section,
-            featured: s.featured,
-            sourceFolder: s.relPath,
-            primaryImage: s.primary,
-            additionalImages: Array.from(s.additional),
-          }));
-        if (works.length === 0) {
-          if (!confirm("No works are marked Show on site. Saving will remove ALL works from the public site. Continue?")) {
+        // Save every work the admin knows about, even drafts (included=false).
+        // The server stores them all in works.json so edits persist; only
+        // the published ones get their images copied to public/works/ and
+        // appear on the public site.
+        const works = state.map((s) => ({
+          slug: s.slug,
+          title: s.title,
+          year: s.year === "" ? null : Number(s.year),
+          month: s.month === "" ? null : Number(s.month),
+          day: s.day === "" ? null : Number(s.day),
+          sequence: s.sequence === "" ? null : Number(s.sequence),
+          sourceFolder: s.relPath,
+          isLooseFile: !!s.isLooseFile,
+          published: !!s.included,
+          caption: s.caption,
+          tags: Array.from(s.tags),
+          hiddenImages: Array.from(s.hiddenImages),
+          images: s.images.map((i, idx) => {
+            const shown = idx === 0 ? true : !!i.shown;
+            return {
+              filename: i.filename,
+              sourceFile: i.sourceFile || i.filename,
+              shown,
+              featured: shown && !!i.featured,
+              caption: i.caption || "",
+              status: i.status === "nfs" || i.status === "sold" ? i.status : null,
+            };
+          }),
+        }));
+        const publishedCount = works.filter((w) => w.published).length;
+        if (publishedCount === 0) {
+          if (!confirm("No works are marked Show on website. Saving will remove ALL works from the public site. (Your edits will still be kept as drafts.) Continue?")) {
             status.textContent = "";
             return;
           }
@@ -626,15 +1725,18 @@ export const prerender = false;
           const r = await fetch("/api/save", {
             method: "POST",
             headers: { "content-type": "application/json" },
-            body: JSON.stringify({ works }),
+            body: JSON.stringify({ works, meta }),
           });
-          const j = await r.json().catch(() => ({}));
+          let j = {};
+          try { j = await r.json(); } catch {}
           if (!r.ok) throw new Error(j.error || `HTTP ${r.status}`);
           status.textContent = `Saved ${j.written} work${j.written === 1 ? "" : "s"}.`;
           status.className = "status success";
+          await load();
         } catch (e) {
           status.textContent = "";
           showAlert("Save failed: " + (e.message || e));
+          console.error(e);
         } finally {
           saveBtn.disabled = false;
         }
@@ -644,6 +1746,486 @@ export const prerender = false;
         return String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
       }
       function escapeAttr(s) { return escapeHtml(s); }
+
+      // -------- Manage categories modal --------
+      const manageBtn = $("manage-categories");
+      const tagsModal = $("tags-modal");
+      const tagEditList = $("tag-edit-list");
+      const addTagInput = $("add-tag-input");
+      const addTagBtn = $("add-tag-btn");
+      const modalCancel = $("modal-cancel");
+      const modalSave = $("modal-save");
+
+      // Working copy of the tag list while the modal is open. Discarded on Cancel.
+      let modalTags = [];
+
+      function slugifyTag(input) {
+        return String(input)
+          .toLowerCase()
+          .normalize("NFKD")
+          .replace(/[̀-ͯ]/g, "")
+          .replace(/&/g, "and")
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "")
+          .slice(0, 40);
+      }
+
+      function openTagsModal() {
+        modalTags = availableTags.map((t) => ({
+          id: t.id,
+          label: t.label,
+          inNav: !!t.inNav,
+        }));
+        renderTagEditList();
+        tagsModal.classList.add("open");
+        addTagInput.value = "";
+        setTimeout(() => addTagInput.focus(), 50);
+      }
+
+      function closeTagsModal() {
+        tagsModal.classList.remove("open");
+      }
+
+      function countWorksUsingTag(tagId) {
+        return state.filter((s) => s.tags.has(tagId)).length;
+      }
+
+      function renderTagEditList() {
+        tagEditList.innerHTML = "";
+        if (modalTags.length === 0) {
+          const empty = document.createElement("p");
+          empty.className = "modal-empty";
+          empty.textContent = "No categories yet. Add some below.";
+          tagEditList.appendChild(empty);
+          return;
+        }
+        modalTags.forEach((t, idx) => {
+          const uses = countWorksUsingTag(t.id);
+          const inUse = uses > 0;
+          const row = document.createElement("div");
+          row.className = "tag-edit-row";
+          row.innerHTML = `
+            <input type="text" value="${escapeAttr(t.label)}" maxlength="60" />
+            <span class="uses">${uses} use${uses === 1 ? "" : "s"}</span>
+            <label class="innav-toggle" title="When checked, this category appears in the left menu on every page">
+              <input type="checkbox" data-action="innav" ${t.inNav ? "checked" : ""} />
+              <span>Show in menu</span>
+            </label>
+            <button type="button" class="remove">Remove</button>
+          `;
+          row.querySelector('input[type="text"]').addEventListener("input", (e) => {
+            modalTags[idx].label = e.target.value;
+          });
+          row.querySelector('[data-action="innav"]').addEventListener("change", (e) => {
+            modalTags[idx].inNav = e.target.checked;
+          });
+          row.querySelector(".remove").addEventListener("click", () => {
+            if (inUse) {
+              if (!confirm(
+                `${uses} work${uses === 1 ? "" : "s"} ${uses === 1 ? "uses" : "use"} the "${t.label}" category. ` +
+                `Remove anyway? Those works will lose this tag the next time you save them.`
+              )) return;
+            }
+            modalTags.splice(idx, 1);
+            renderTagEditList();
+          });
+          tagEditList.appendChild(row);
+        });
+      }
+
+      function tryAddTag() {
+        const label = addTagInput.value.trim();
+        if (!label) return;
+        let base = slugifyTag(label);
+        if (!base) {
+          showAlert("Category name needs at least one letter or number.");
+          return;
+        }
+        let id = base;
+        let n = 2;
+        while (modalTags.some((t) => t.id === id)) {
+          id = base + "-" + n;
+          n++;
+        }
+        modalTags.push({ id, label });
+        addTagInput.value = "";
+        renderTagEditList();
+        addTagInput.focus();
+      }
+
+      manageBtn.addEventListener("click", openTagsModal);
+      modalCancel.addEventListener("click", closeTagsModal);
+      tagsModal.addEventListener("click", (e) => {
+        if (e.target === tagsModal) closeTagsModal();
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && tagsModal.classList.contains("open")) closeTagsModal();
+      });
+      addTagBtn.addEventListener("click", tryAddTag);
+      addTagInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          tryAddTag();
+        }
+      });
+
+      modalSave.addEventListener("click", async () => {
+        // Validate locally before sending.
+        const seen = new Set();
+        for (const t of modalTags) {
+          const label = t.label.trim();
+          if (!label) {
+            showAlert("Every category needs a name. Fix the empty one and try again.");
+            return;
+          }
+          if (seen.has(t.id)) {
+            showAlert(`Two categories ended up with the same id "${t.id}". Rename one.`);
+            return;
+          }
+          seen.add(t.id);
+        }
+        try {
+          const r = await fetch("/api/save-tags", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({
+              tags: modalTags.map((t) => ({
+                id: t.id,
+                label: t.label.trim(),
+                inNav: !!t.inNav,
+              })),
+            }),
+          });
+          let j = {};
+          try { j = await r.json(); } catch {}
+          if (!r.ok) throw new Error(j.error || `HTTP ${r.status}`);
+          closeTagsModal();
+          status.textContent = `Saved ${j.count} categor${j.count === 1 ? "y" : "ies"}.`;
+          status.className = "status success";
+          // Re-load so the chip rows on every work card pick up the new vocab.
+          await load();
+        } catch (e) {
+          showAlert("Failed to save categories: " + (e.message || e));
+          console.error(e);
+        }
+      });
+
+      // -------- Manage year ranges modal --------
+      const manageYearGroupsBtn = $("manage-year-ranges");
+      const yearGroupsModal = $("year-groups-modal");
+      const yearGroupEditList = $("year-group-edit-list");
+      const addYearGroupBtn = $("add-year-group-btn");
+      const yearGroupsCancel = $("year-groups-cancel");
+      const yearGroupsSave = $("year-groups-save");
+
+      // Working copy of year groups while the modal is open.
+      let modalYearGroups = [];
+
+      function previewLabel(g) {
+        const hasMin = typeof g.minYear === "number" && Number.isFinite(g.minYear);
+        const hasMax = typeof g.maxYear === "number" && Number.isFinite(g.maxYear);
+        if (hasMin && hasMax) {
+          if (g.minYear === g.maxYear) return String(g.minYear);
+          if (g.minYear > g.maxYear) return `(invalid: min > max)`;
+          return `${g.minYear}–${g.maxYear}`;
+        }
+        if (hasMax) return `${g.maxYear} and earlier`;
+        if (hasMin) return `${g.minYear} and later`;
+        return "(empty — set a min or max year)";
+      }
+
+      function isInvalidRow(g) {
+        const hasMin = typeof g.minYear === "number" && Number.isFinite(g.minYear);
+        const hasMax = typeof g.maxYear === "number" && Number.isFinite(g.maxYear);
+        if (!hasMin && !hasMax) return true;
+        if (hasMin && hasMax && g.minYear > g.maxYear) return true;
+        return false;
+      }
+
+      function renderYearGroupEditList() {
+        yearGroupEditList.innerHTML = "";
+        if (modalYearGroups.length === 0) {
+          const empty = document.createElement("p");
+          empty.className = "modal-empty";
+          empty.textContent = "No ranges yet. Click \"Add a range\" below.";
+          yearGroupEditList.appendChild(empty);
+          return;
+        }
+        // Header row
+        const header = document.createElement("div");
+        header.className = "year-group-row";
+        header.innerHTML = `
+          <span class="col-header">Min year</span>
+          <span class="col-header">Max year</span>
+          <span class="col-header">Shown as</span>
+          <span></span>
+        `;
+        yearGroupEditList.appendChild(header);
+
+        modalYearGroups.forEach((g, idx) => {
+          const row = document.createElement("div");
+          row.className = "year-group-row";
+          const invalid = isInvalidRow(g);
+          row.innerHTML = `
+            <input type="number" class="year-input" min="1800" max="2200" value="${typeof g.minYear === "number" ? g.minYear : ""}" placeholder="—" data-action="minYear" />
+            <input type="number" class="year-input" min="1800" max="2200" value="${typeof g.maxYear === "number" ? g.maxYear : ""}" placeholder="—" data-action="maxYear" />
+            <span class="preview${invalid ? " error" : ""}">${escapeHtml(previewLabel(g))}</span>
+            <button type="button" class="remove">Remove</button>
+          `;
+          // Update *just* the preview cell on each keystroke; rebuilding
+          // the whole list would steal focus from the active input.
+          row.querySelector('[data-action="minYear"]').addEventListener("input", (e) => {
+            const v = parseInt(e.target.value, 10);
+            modalYearGroups[idx].minYear = Number.isFinite(v) ? v : undefined;
+            updateRowPreview(row, modalYearGroups[idx]);
+          });
+          row.querySelector('[data-action="maxYear"]').addEventListener("input", (e) => {
+            const v = parseInt(e.target.value, 10);
+            modalYearGroups[idx].maxYear = Number.isFinite(v) ? v : undefined;
+            updateRowPreview(row, modalYearGroups[idx]);
+          });
+          // Add/remove DO change the row count, so a full re-render is OK
+          // here (no input has focus on the row being removed).
+          row.querySelector(".remove").addEventListener("click", () => {
+            modalYearGroups.splice(idx, 1);
+            renderYearGroupEditList();
+          });
+          yearGroupEditList.appendChild(row);
+        });
+      }
+
+      function updateRowPreview(rowEl, g) {
+        const previewEl = rowEl.querySelector(".preview");
+        if (!previewEl) return;
+        previewEl.textContent = previewLabel(g);
+        previewEl.classList.toggle("error", isInvalidRow(g));
+      }
+
+      function openYearGroupsModal() {
+        modalYearGroups = liveYearGroups.map((g) => ({
+          minYear: typeof g.minYear === "number" ? g.minYear : undefined,
+          maxYear: typeof g.maxYear === "number" ? g.maxYear : undefined,
+        }));
+        renderYearGroupEditList();
+        yearGroupsModal.classList.add("open");
+      }
+
+      function closeYearGroupsModal() {
+        yearGroupsModal.classList.remove("open");
+      }
+
+      manageYearGroupsBtn.addEventListener("click", openYearGroupsModal);
+      yearGroupsCancel.addEventListener("click", closeYearGroupsModal);
+      yearGroupsModal.addEventListener("click", (e) => {
+        if (e.target === yearGroupsModal) closeYearGroupsModal();
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && yearGroupsModal.classList.contains("open")) {
+          closeYearGroupsModal();
+        }
+      });
+      addYearGroupBtn.addEventListener("click", () => {
+        modalYearGroups.push({});
+        renderYearGroupEditList();
+      });
+
+      yearGroupsSave.addEventListener("click", async () => {
+        // Validate: every row must have at least one bound, and min ≤ max
+        // when both are set.
+        for (const g of modalYearGroups) {
+          if (isInvalidRow(g)) {
+            showAlert("Fix the year ranges with errors before saving.");
+            return;
+          }
+        }
+        try {
+          const r = await fetch("/api/save-year-groups", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({
+              groups: modalYearGroups.map((g) => ({
+                minYear: typeof g.minYear === "number" ? g.minYear : null,
+                maxYear: typeof g.maxYear === "number" ? g.maxYear : null,
+              })),
+            }),
+          });
+          let j = {};
+          try { j = await r.json(); } catch {}
+          if (!r.ok) throw new Error(j.error || `HTTP ${r.status}`);
+          closeYearGroupsModal();
+          status.textContent = `Saved ${j.count} year range${j.count === 1 ? "" : "s"}.`;
+          status.className = "status success";
+          // Refresh state so the picker reflects the new live config.
+          await load();
+        } catch (e) {
+          showAlert("Failed to save year ranges: " + (e.message || e));
+          console.error(e);
+        }
+      });
+
+      // -------- "Check Artwork Folder for Updates" --------
+      //
+      // Nicholas picks his Artwork folder via the native folder picker.
+      // We walk it, compare against what the server already has, and
+      // upload just the new files. Additive-only: the server never
+      // deletes anything based on what's missing from Nicholas's pick.
+      //
+      // Flow:
+      //   1. Click the button → open <input type=file webkitdirectory>.
+      //   2. Browser surfaces every file under the picked root, with
+      //      `file.webkitRelativePath` carrying the relative path.
+      //   3. Strip the picked folder's own name from the front of each
+      //      path so paths look like "2025/2025.31_The Portal/IMG.PNG".
+      //   4. POST a manifest [{path, size}] to /api/sync/manifest. Server
+      //      replies with which paths it doesn't have yet.
+      //   5. POST each needed file to /api/sync/upload as multipart.
+      //   6. If we auto-saved dirty edits earlier (load happened then),
+      //      we're done. Otherwise call load() to refresh the picker.
+      const refreshBtn = $("refresh-from-drive");
+      const folderPicker = $("artwork-folder-picker");
+
+      function statusMsg(text, ok) {
+        status.textContent = text;
+        status.className = ok ? "status success" : "status";
+      }
+
+      async function uploadOne(filePath, file) {
+        const fd = new FormData();
+        fd.append("path", filePath);
+        fd.append("file", file, file.name);
+        const r = await fetch("/api/sync/upload", { method: "POST", body: fd });
+        let j = {};
+        try { j = await r.json(); } catch {}
+        if (!r.ok) throw new Error(j.error || `HTTP ${r.status} uploading ${filePath}`);
+        return j;
+      }
+
+      async function syncFromFolder(fileList) {
+        // Determine the "picked folder" prefix so we can strip it off
+        // each path. webkitRelativePath looks like
+        // "PickedFolderName/2025/2025.31_The Portal/IMG_0293.PNG".
+        // We want everything after the first slash.
+        const entries = [];
+        let pickedFolderName = "";
+        let totalSeen = 0; // every file the browser handed us
+        let skippedHidden = 0;
+        let skippedNonImage = 0;
+        let skippedNoWeb = 0;
+        for (const f of fileList) {
+          const rel = f.webkitRelativePath || f.name;
+          if (!rel) continue;
+          totalSeen++;
+          if (!pickedFolderName) {
+            const firstSlash = rel.indexOf("/");
+            pickedFolderName = firstSlash >= 0 ? rel.slice(0, firstSlash) : "";
+          }
+          // Strip the picked-folder prefix; if not present, use the rel
+          // path as-is (e.g. when the picker dropped a flat list).
+          const stripPrefix = pickedFolderName ? pickedFolderName + "/" : "";
+          const inner = rel.startsWith(stripPrefix) ? rel.slice(stripPrefix.length) : rel;
+          // Skip hidden + macOS metadata.
+          if (inner.split("/").some((p) => p.startsWith(".") || p === "__MACOSX")) {
+            skippedHidden++;
+            continue;
+          }
+          // Publishable convention (must match server-side isPublishable):
+          //   - image extension
+          //   - filename stem (before extension) ends with "_web"
+          //     (preceded by underscore / hyphen / space / dot)
+          // Anything else is silently skipped — never sent to the server.
+          const baseName = inner.split("/").pop() || "";
+          const dot = baseName.lastIndexOf(".");
+          const ext = dot >= 0 ? baseName.slice(dot).toLowerCase() : "";
+          const stem = dot >= 0 ? baseName.slice(0, dot) : baseName;
+          if (![".jpg", ".jpeg", ".png", ".gif", ".webp", ".tif", ".tiff", ".heic", ".heif"].includes(ext)) {
+            skippedNonImage++;
+            continue;
+          }
+          if (!/[_\-\s.]web$/i.test(stem)) {
+            skippedNoWeb++;
+            continue;
+          }
+          entries.push({ path: inner, size: f.size, file: f });
+        }
+
+        // Console summary helps diagnose surprises like the Web.png case.
+        console.log(
+          `[sync] picked folder "${pickedFolderName}": ${totalSeen} total, ` +
+          `${entries.length} match _web, ${skippedNoWeb} images missing _web, ` +
+          `${skippedNonImage} non-image, ${skippedHidden} hidden/system`
+        );
+
+        if (entries.length === 0) {
+          statusMsg(
+            `Picked folder has ${totalSeen} file${totalSeen === 1 ? "" : "s"}, but none end with “_web”. Nothing to upload.`,
+            false
+          );
+          return { uploaded: 0, skipped: 0, total: 0 };
+        }
+
+        statusMsg(
+          `Picked folder has ${totalSeen} files; ${entries.length} match “_web”. Checking which need uploading…`,
+          false
+        );
+        const manifestRes = await fetch("/api/sync/manifest", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ files: entries.map((e) => ({ path: e.path, size: e.size })) }),
+        });
+        let manifestJson = {};
+        try { manifestJson = await manifestRes.json(); } catch {}
+        if (!manifestRes.ok) {
+          throw new Error(manifestJson.error || `manifest HTTP ${manifestRes.status}`);
+        }
+        const needed = new Set(Array.isArray(manifestJson.needed) ? manifestJson.needed : []);
+        const toUpload = entries.filter((e) => needed.has(e.path));
+
+        if (toUpload.length === 0) {
+          statusMsg(
+            `All ${entries.length} matching file${entries.length === 1 ? " is" : "s are"} already on the website. Nothing new to upload.`,
+            true
+          );
+          return { uploaded: 0, skipped: entries.length, total: entries.length };
+        }
+
+        let done = 0;
+        for (const e of toUpload) {
+          statusMsg(`Uploading ${++done} of ${toUpload.length} new file${toUpload.length === 1 ? "" : "s"}…`, false);
+          await uploadOne(e.path, e.file);
+        }
+        statusMsg(
+          `Uploaded ${toUpload.length} new file${toUpload.length === 1 ? "" : "s"}. (${entries.length - toUpload.length} already on the website were skipped.)`,
+          true
+        );
+        return { uploaded: toUpload.length, skipped: entries.length - toUpload.length, total: entries.length };
+      }
+
+      refreshBtn.addEventListener("click", () => {
+        // Trigger the native folder picker. Subsequent flow happens in
+        // the picker's "change" handler below.
+        folderPicker.value = ""; // clear so picking the same folder again refires
+        folderPicker.click();
+      });
+
+      folderPicker.addEventListener("change", async (e) => {
+        const files = Array.from(e.target.files || []);
+        if (files.length === 0) return;
+        refreshBtn.disabled = true;
+        const wasDirty = dirty;
+        try {
+          // Auto-save first so Nicholas doesn't lose pending edits.
+          if (wasDirty) await save();
+          await syncFromFolder(files);
+          // Refresh the picker so newly-uploaded files appear with the
+          // "New · needs review" badge.
+          await load();
+        } catch (err) {
+          showAlert("Couldn't sync from folder: " + (err.message || err));
+          console.error(err);
+        } finally {
+          refreshBtn.disabled = false;
+        }
+      });
 
       saveBtn.addEventListener("click", save);
       load();

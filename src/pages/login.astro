@@ -1,0 +1,116 @@
+---
+export const prerender = false;
+
+import Layout from "../layouts/Layout.astro";
+import { SESSION_COOKIE, verifySession } from "../lib/auth";
+
+// If already signed in, skip the login form entirely.
+const existing = Astro.cookies.get(SESSION_COOKIE)?.value;
+if (verifySession(existing)) {
+  return Astro.redirect("/admin/works");
+}
+
+const nextParam = Astro.url.searchParams.get("next") ?? "";
+const showError = Astro.url.searchParams.get("error") === "1";
+---
+
+<Layout title="Sign in — Nicholas Hart Khan" section={null}>
+  <div class="login-page">
+    <h2 class="page-title">Sign in</h2>
+    <p class="login-intro">Enter your password to manage your works.</p>
+
+    {showError && (
+      <p class="login-error" role="alert">That password didn’t match. Please try again.</p>
+    )}
+
+    <form class="login-form" method="POST" action="/api/login">
+      {/* Hidden username so browser password managers can save the credential cleanly. */}
+      <input
+        type="text"
+        name="username"
+        value="nicholas"
+        autocomplete="username"
+        hidden
+        readonly
+      />
+      <input type="hidden" name="next" value={nextParam} />
+
+      <label class="login-field" for="login-password">
+        <span class="login-label">Password</span>
+        <input
+          id="login-password"
+          name="password"
+          type="password"
+          autocomplete="current-password"
+          required
+          autofocus
+        />
+      </label>
+
+      <button class="login-submit" type="submit">Unlock</button>
+    </form>
+  </div>
+</Layout>
+
+<style>
+  .login-page {
+    max-width: 28rem;
+    margin: 4rem auto;
+    padding: 0 1.5rem;
+    text-align: center;
+  }
+  .login-intro {
+    color: var(--color-muted, #6a6457);
+    font-style: italic;
+    margin-bottom: 2rem;
+  }
+  .login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    align-items: stretch;
+  }
+  .login-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    text-align: left;
+  }
+  .login-label {
+    font-size: 0.95rem;
+    color: var(--color-muted, #6a6457);
+  }
+  .login-form input[type="password"] {
+    font-family: inherit;
+    font-size: 1.2rem;
+    padding: 0.75rem 0.9rem;
+    border: 1px solid var(--color-rule, #d6cfbe);
+    background: #faf6ec;
+    color: inherit;
+  }
+  .login-form input[type="password"]:focus {
+    outline: 2px solid var(--color-accent, #1a1a1a);
+    outline-offset: 1px;
+  }
+  .login-submit {
+    font-family: inherit;
+    font-size: 1.05rem;
+    font-variant-caps: small-caps;
+    letter-spacing: 0.04em;
+    padding: 0.7rem 1.5rem;
+    background: var(--color-accent, #1a1a1a);
+    color: #faf6ec;
+    border: none;
+    cursor: pointer;
+  }
+  .login-submit:hover {
+    opacity: 0.9;
+  }
+  .login-error {
+    color: #8a2a2a;
+    background: #f6e3d8;
+    border: 1px solid #8a2a2a;
+    padding: 0.6rem 0.9rem;
+    margin-bottom: 1rem;
+  }
+</style>

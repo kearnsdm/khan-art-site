@@ -1,0 +1,29 @@
+{
+  "tags": [
+    {
+      "id": "landscapes",
+      "label": "Landscapes",
+      "inNav": true
+    },
+    {
+      "id": "architecture",
+      "label": "Architecture",
+      "inNav": true
+    },
+    {
+      "id": "portraits",
+      "label": "Portraits",
+      "inNav": true
+    },
+    {
+      "id": "abstracts",
+      "label": "Abstracts",
+      "inNav": true
+    },
+    {
+      "id": "nightscapes",
+      "label": "Nightscapes",
+      "inNav": true
+    }
+  ]
+}

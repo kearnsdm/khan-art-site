@@ -1,8 +1,6 @@
 import type { APIRoute } from "astro";
-import { createReadStream } from "node:fs";
-import { promises as fs } from "node:fs";
 import path from "node:path";
-import { resolveContentPath } from "../../lib/content-scanner";
+import { contentStorage } from "../../lib/content-storage";
 
 export const prerender = false;
 
@@ -14,27 +12,32 @@ const MIME_TYPES: Record<string, string> = {
   ".webp": "image/webp",
   ".tif": "image/tiff",
   ".tiff": "image/tiff",
+  ".heic": "image/heic",
+  ".heif": "image/heif",
 };
 
+/**
+ * Serve a stored content image by its path within the storage layer.
+ * In local dev this reads from the filesystem; in production it reads
+ * from Netlify Blobs. Either way, the path is the same forward-slashed
+ * key the scanner uses.
+ */
 export const GET: APIRoute = async ({ url }) => {
   const rel = url.searchParams.get("path");
   if (!rel) return new Response("missing path", { status: 400 });
 
-  const abs = resolveContentPath(rel);
-  if (!abs) return new Response("invalid path", { status: 400 });
+  const store = contentStorage();
+  const bytes = await store.get(rel);
+  if (!bytes) return new Response("not found", { status: 404 });
 
-  const stat = await fs.stat(abs).catch(() => null);
-  if (!stat?.isFile()) return new Response("not found", { status: 404 });
-
-  const ext = path.extname(abs).toLowerCase();
+  const ext = path.extname(rel).toLowerCase();
   const contentType = MIME_TYPES[ext] ?? "application/octet-stream";
 
-  const stream = createReadStream(abs);
-  return new Response(stream as unknown as ReadableStream, {
+  return new Response(bytes, {
     status: 200,
     headers: {
       "content-type": contentType,
-      "content-length": String(stat.size),
+      "content-length": String(bytes.byteLength),
       "cache-control": "no-store",
     },
   });

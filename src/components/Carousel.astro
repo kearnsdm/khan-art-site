@@ -1,36 +1,45 @@
 ---
-import type { Work } from "../data/works";
+import type { Work, WorkImage } from "../data/works";
+import { workHeadline } from "../data/works";
+
+export interface FeaturedSlide {
+  work: Work;
+  image: WorkImage;
+  imagePath: string;
+}
 
 interface Props {
-  works: Work[];
+  slides: FeaturedSlide[];
   autoplayMs?: number;
 }
 
-const { works, autoplayMs = 9000 } = Astro.props;
+const { slides, autoplayMs = 9000 } = Astro.props;
 ---
 
 <div class="carousel" data-carousel data-autoplay={autoplayMs.toString()}>
   <div class="slides">
-    {works.map((work, i) => (
+    {slides.map(({ work, image, imagePath }, i) => (
       <a
         class={`slide${i === 0 ? " active" : ""}`}
         href={`/works/${work.slug}`}
         data-index={i.toString()}
-        data-title={work.title}
-        data-year={work.year.toString()}
+        data-headline={workHeadline(work)}
       >
-        <img src={work.primaryImage} alt={work.primaryImageAlt} loading={i === 0 ? "eager" : "lazy"} />
+        <img
+          src={imagePath}
+          alt={`${work.title} painting`}
+          loading={i === 0 ? "eager" : "lazy"}
+        />
       </a>
     ))}
     <div class="overlay">
       <button type="button" data-prev aria-label="Previous">&larr;</button>
       <button type="button" data-next aria-label="Next">&rarr;</button>
-      <span class="indicator" data-indicator>1 / {works.length}</span>
+      <span class="indicator" data-indicator>1 / {slides.length}</span>
     </div>
   </div>
   <div class="caption" data-caption>
-    {works[0]?.title}
-    <span class="year">{works[0]?.year}</span>
+    {slides[0] && workHeadline(slides[0].work)}
   </div>
 </div>
 
@@ -55,9 +64,7 @@ const { works, autoplayMs = 9000 } = Astro.props;
       if (indicator) indicator.textContent = `${index + 1} / ${slides.length}`;
       if (caption) {
         const slide = slides[index];
-        const title = slide?.dataset.title ?? "";
-        const year = slide?.dataset.year ?? "";
-        caption.innerHTML = `${title}<span class="year">${year}</span>`;
+        caption.textContent = slide?.dataset.headline ?? "";
       }
     }
 

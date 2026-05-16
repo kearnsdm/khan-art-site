@@ -4,7 +4,8 @@ import { createReadStream } from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
 import sharp from "sharp";
-import { projectRoot, resolveContentPath } from "../../lib/content-scanner";
+import { projectRoot } from "../../lib/content-scanner";
+import { contentStorage, usingBlobs } from "../../lib/content-storage";
 
 export const prerender = false;
 
@@ -16,22 +17,29 @@ async function ensureCacheDir() {
   await fs.mkdir(CACHE_DIR, { recursive: true });
 }
 
+/**
+ * Generate (and cache) a JPEG thumbnail for a stored image. Reads from
+ * the content storage layer (Blobs in prod, filesystem in dev), runs
+ * the bytes through sharp, and caches the result under .cache/thumbs/.
+ *
+ * In production, the disk cache is ephemeral (Netlify functions have a
+ * read-write tmpfs for the lifetime of the function instance) but
+ * survives within a warm function so repeated views are still fast.
+ */
 export const GET: APIRoute = async ({ url }) => {
   const rel = url.searchParams.get("path");
   if (!rel) return new Response("missing path", { status: 400 });
 
-  const abs = resolveContentPath(rel);
-  if (!abs) return new Response("invalid path", { status: 400 });
-
   const sizeParam = parseInt(url.searchParams.get("size") || `${DEFAULT_SIZE}`, 10);
   const size = Math.min(Math.max(80, isFinite(sizeParam) ? sizeParam : DEFAULT_SIZE), MAX_SIZE);
 
-  const stat = await fs.stat(abs).catch(() => null);
-  if (!stat?.isFile()) return new Response("not found", { status: 404 });
+  const store = contentStorage();
+  const stat = await store.stat(rel);
+  if (!stat) return new Response("not found", { status: 404 });
 
   const cacheKey = crypto
     .createHash("sha1")
-    .update(`${abs}|${stat.size}|${stat.mtimeMs}|${size}`)
+    .update(`${rel}|${stat.size}|${stat.lastModified ?? 0}|${size}|${usingBlobs() ? "b" : "f"}`)
     .digest("hex");
   const cachePath = path.join(CACHE_DIR, `${cacheKey}.jpg`);
 
@@ -39,7 +47,9 @@ export const GET: APIRoute = async ({ url }) => {
   if (!cached) {
     await ensureCacheDir();
     try {
-      await sharp(abs, { failOn: "none" })
+      const bytes = await store.get(rel);
+      if (!bytes) return new Response("not found", { status: 404 });
+      await sharp(bytes, { failOn: "none" })
         .rotate()
         .resize(size, size, { fit: "cover", withoutEnlargement: true })
         .jpeg({ quality: 78, mozjpeg: true })

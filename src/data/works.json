@@ -1,37 +1,1568 @@
 {
+  "meta": {
+    "displayOrder": "year-month",
+    "hiddenWorks": []
+  },
   "works": [
+    {
+      "slug": "gabe-mart",
+      "title": "Gabe Mart",
+      "sourceFolder": "content/2026/2026.9_Gabe Mart",
+      "images": [
+        {
+          "filename": "Gabe Mart_2026_web.jpg",
+          "shown": true,
+          "featured": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [
+        "landscapes",
+        "architecture"
+      ],
+      "year": 2026,
+      "sequence": 9
+    },
+    {
+      "slug": "night-and-day",
+      "title": "Night and Day",
+      "sourceFolder": "content/2026/2026.8_Night and Day",
+      "images": [
+        {
+          "filename": "Night and Day_2026_web.jpg",
+          "shown": true,
+          "featured": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [
+        "landscapes",
+        "nightscapes"
+      ],
+      "year": 2026,
+      "sequence": 8
+    },
+    {
+      "slug": "the-valley-ii",
+      "title": "The Valley II",
+      "sourceFolder": "content/2026/2026.7_The Valley II",
+      "images": [
+        {
+          "filename": "The Valley II_2026_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2026,
+      "sequence": 7
+    },
+    {
+      "slug": "the-birdhouse",
+      "title": "The Birdhouse",
+      "sourceFolder": "content/2026/2026.4_The Birdhouse",
+      "images": [
+        {
+          "filename": "The Birdhouse_2026_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [
+        "landscapes"
+      ],
+      "year": 2026,
+      "sequence": 4
+    },
+    {
+      "slug": "the-glass-flame",
+      "title": "The Glass Flame",
+      "sourceFolder": "content/2026/2026.3_The Glass Flame",
+      "images": [
+        {
+          "filename": "The Glass Flame_2026_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [
+        "architecture"
+      ],
+      "year": 2026,
+      "sequence": 3
+    },
+    {
+      "slug": "105-illicium-house-portrait",
+      "title": "105 Illicium house portrait",
+      "sourceFolder": "content/2026/2026.1_105 Illicium house portrait",
+      "images": [
+        {
+          "filename": "IMG_4878_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [
+        "landscapes",
+        "architecture"
+      ],
+      "year": 2026,
+      "sequence": 1
+    },
+    {
+      "slug": "the-portal",
+      "title": "The Portal",
+      "sourceFolder": "content/2025/2025.31_The Portal",
+      "images": [
+        {
+          "filename": "The Portal_2025_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [
+        "landscapes"
+      ],
+      "year": 2025,
+      "sequence": 31
+    },
+    {
+      "slug": "coral-reef",
+      "title": "Coral Reef",
+      "sourceFolder": "content/2025/2025.30_Coral Reef",
+      "images": [
+        {
+          "filename": "Coral Reef_2025_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [
+        "landscapes"
+      ],
+      "year": 2025,
+      "sequence": 30
+    },
+    {
+      "slug": "magnolia",
+      "title": "Magnolia",
+      "sourceFolder": "content/2025/2025.29_Magnolia",
+      "published": false,
+      "images": [
+        {
+          "filename": "Magnolia_Final_2025_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2025,
+      "sequence": 29
+    },
+    {
+      "slug": "high-wires",
+      "title": "High Wires",
+      "sourceFolder": "content/2025/2025.27 High Wires",
+      "images": [
+        {
+          "filename": "High Wires_2025_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [
+        "architecture",
+        "nightscapes"
+      ],
+      "year": 2025,
+      "sequence": 27
+    },
     {
       "slug": "the-seven-sisters",
       "title": "The Seven Sisters",
-      "year": 2025,
-      "section": "paintings-2025",
-      "featured": true,
       "sourceFolder": "content/2025/2025.26_The Seven Sisters",
-      "primaryImage": "/works/the-seven-sisters/IMG_9955.jpg",
-      "primaryImageAlt": "The Seven Sisters painting",
-      "additionalImages": []
+      "published": false,
+      "images": [
+        {
+          "filename": "The Seven Sisters_2025_web.jpg",
+          "shown": true
+        },
+        {
+          "filename": "The Seven Sisters_framed_2025_web.jpg",
+          "shown": false
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [
+        "landscapes"
+      ],
+      "year": 2025,
+      "sequence": 26
+    },
+    {
+      "slug": "shadowlands-and-study",
+      "title": "Shadowlands and study",
+      "sourceFolder": "content/2025/2025.25_Shadowlands and study",
+      "published": false,
+      "images": [
+        {
+          "filename": "Shadowlands_Final_2025_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [
+        "landscapes",
+        "nightscapes"
+      ],
+      "year": 2025,
+      "sequence": 25
+    },
+    {
+      "slug": "bodie-island-lighthouse-ii",
+      "title": "Bodie Island Lighthouse II",
+      "sourceFolder": "content/2025/2025.24_Bodie Island Lighthouse II",
+      "images": [
+        {
+          "filename": "Bodie Lighthouse II_2025_web.jpg",
+          "shown": true,
+          "status": "sold"
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [
+        "landscapes",
+        "architecture"
+      ],
+      "year": 2025,
+      "sequence": 24
+    },
+    {
+      "slug": "bodie-island-lighthouse-i",
+      "title": "Bodie Island Lighthouse I",
+      "sourceFolder": "content/2025/2025.23_Bodie Island Lighthouse I",
+      "images": [
+        {
+          "filename": "Bodie Lighthouse I_2025_web.jpg",
+          "shown": true,
+          "status": "sold"
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [
+        "architecture"
+      ],
+      "year": 2025,
+      "sequence": 23
+    },
+    {
+      "slug": "cape-hatteras-lighthouse",
+      "title": "Cape Hatteras Lighthouse",
+      "sourceFolder": "content/2025/2025.22_Cape Hatteras Lighthouse",
+      "images": [
+        {
+          "filename": "Cape Hatteras Lighthouse_2025_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [
+        "architecture"
+      ],
+      "year": 2025,
+      "sequence": 22
+    },
+    {
+      "slug": "roanoke-island-water-tower",
+      "title": "Roanoke Island Water Tower",
+      "sourceFolder": "content/2025/2025.21_Roanoke Island Water Tower",
+      "published": false,
+      "images": [
+        {
+          "filename": "IMG_9789_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2025,
+      "sequence": 21
     },
     {
       "slug": "weaver-st-oak-carrboro",
       "title": "Weaver St. Oak, Carrboro",
-      "year": 2025,
-      "section": "paintings-2025",
-      "featured": true,
       "sourceFolder": "content/2025/2025.20_Weaver St. Oak, Carrboro",
-      "primaryImage": "/works/weaver-st-oak-carrboro/IMG_9687.jpg",
-      "primaryImageAlt": "Weaver St. Oak, Carrboro painting",
-      "additionalImages": []
+      "published": false,
+      "images": [
+        {
+          "filename": "Weaver Street Oak_Final_2025_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2025,
+      "sequence": 20
     },
     {
       "slug": "raleigh-from-nc-state",
       "title": "Raleigh From NC State",
-      "year": 2025,
-      "section": "paintings-2025",
-      "featured": true,
       "sourceFolder": "content/2025/2025.15_Raleigh From NC State",
-      "primaryImage": "/works/raleigh-from-nc-state/Raleigh From NC State_Final 2.jpg",
-      "primaryImageAlt": "Raleigh From NC State painting",
-      "additionalImages": []
+      "published": false,
+      "images": [
+        {
+          "filename": "Front Hall final paintings_web.jpg",
+          "shown": true,
+          "sourceFile": "Raleigh Final Photos edited/Front Hall final paintings_web.jpg"
+        },
+        {
+          "filename": "Raleigh From NC State_Final_2025_web.jpg",
+          "shown": false,
+          "sourceFile": "Raleigh Final Photos edited/Raleigh From NC State_Final_2025_web.jpg"
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2025,
+      "sequence": 15
+    },
+    {
+      "slug": "dominos",
+      "title": "Dominos",
+      "sourceFolder": "content/2025/2025.14_Dominos",
+      "published": false,
+      "images": [
+        {
+          "filename": "Closing Day_Dominos_Final_2025_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2025,
+      "sequence": 14
+    },
+    {
+      "slug": "downtown-cary-park-i",
+      "title": "Downtown Cary Park I",
+      "sourceFolder": "content/2025/2025.10_Downtown Cary Park I",
+      "published": false,
+      "images": [
+        {
+          "filename": "Cary Park I_Final_2025_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2025,
+      "sequence": 10
+    },
+    {
+      "slug": "color-storm",
+      "title": "Color Storm",
+      "sourceFolder": "content/2025/2025.9_Color Storm",
+      "published": false,
+      "images": [
+        {
+          "filename": "Color Storm_Final_2025_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2025,
+      "sequence": 9
+    },
+    {
+      "slug": "self-portrait-30th-year",
+      "title": "Self Portrait, 30th year",
+      "sourceFolder": "content/2025/2025.6_Self Portrait, 30th year",
+      "published": false,
+      "images": [
+        {
+          "filename": "IMG_8641_web.JPG",
+          "shown": true
+        },
+        {
+          "filename": "IMG_8643_web.JPG",
+          "shown": false
+        },
+        {
+          "filename": "IMG_8644_web.jpg",
+          "shown": false
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2025,
+      "sequence": 6
+    },
+    {
+      "slug": "chinese-lantern-festival-corridor",
+      "title": "Chinese Lantern festival corridor",
+      "sourceFolder": "content/2025/2025.5_Chinese Lantern festival corridor",
+      "images": [
+        {
+          "filename": "Chinese Lantern Corridor_Final_2025_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [
+        "nightscapes"
+      ],
+      "year": 2025,
+      "sequence": 5
+    },
+    {
+      "slug": "chinese-lantern-festival-ii",
+      "title": "Chinese Lantern Festival II",
+      "sourceFolder": "content/2025/2025.4_Chinese Lantern Festival II",
+      "images": [
+        {
+          "filename": "Chinese Lantern Festival II_Final_2025_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [
+        "nightscapes",
+        "architecture"
+      ],
+      "year": 2025,
+      "sequence": 4
+    },
+    {
+      "slug": "chinese-lantern-festival",
+      "title": "Chinese Lantern Festival",
+      "sourceFolder": "content/2025/2025.3_Chinese Lantern Festival",
+      "published": false,
+      "images": [
+        {
+          "filename": "Chinese Lantern Festival_Final_2025_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [
+        "architecture",
+        "nightscapes"
+      ],
+      "year": 2025,
+      "sequence": 3
+    },
+    {
+      "slug": "colorado-landscape",
+      "title": "Colorado landscape",
+      "sourceFolder": "content/2025/2025.2_Colorado landscape",
+      "images": [
+        {
+          "filename": "Colorado mountains final image_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [
+        "landscapes"
+      ],
+      "year": 2025,
+      "sequence": 2
+    },
+    {
+      "slug": "884-888-main-st-willimantic",
+      "title": "884-888 Main St. Willimantic",
+      "sourceFolder": "content/2024/884-888 Main St. Willimantic",
+      "images": [
+        {
+          "filename": "884-888 Main St_Final_2024_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [
+        "nightscapes",
+        "architecture"
+      ],
+      "year": 2024
+    },
+    {
+      "slug": "devin-oval-portrait-10-18-2024",
+      "title": "Devin oval portrait_10 18 2024",
+      "sourceFolder": "content/2024/Devin oval portrait_10 18 2024",
+      "published": false,
+      "images": [
+        {
+          "filename": "Devin Portrait_part 6_Final_2024_web.png",
+          "shown": true
+        },
+        {
+          "filename": "devin oval portrait progress_web.jpg",
+          "shown": false
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [
+        "portraits"
+      ],
+      "year": 2024
+    },
+    {
+      "slug": "don-s-house-portrait-2024",
+      "title": "Don's house portrait_2024",
+      "sourceFolder": "content/2024/Don's house portrait_2024",
+      "published": false,
+      "images": [
+        {
+          "filename": "Don's house official photo_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2024
+    },
+    {
+      "slug": "gym-painting-2024",
+      "title": "Gym painting_2024",
+      "sourceFolder": "content/2024/Gym painting_2024",
+      "published": false,
+      "images": [
+        {
+          "filename": "Gym Painting_Final_2024_web.JPG",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2024
+    },
+    {
+      "slug": "hartford-streetscape",
+      "title": "Hartford Streetscape",
+      "sourceFolder": "content/2024/Hartford Streetscape",
+      "published": false,
+      "images": [
+        {
+          "filename": "Hartford Streetscape_Final_2024_web.jpg",
+          "shown": true,
+          "sourceFile": "final photos/Hartford Streetscape_Final_2024_web.jpg"
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2024
+    },
+    {
+      "slug": "november-on-the-court",
+      "title": "November on the Court",
+      "sourceFolder": "content/2024/November on the Court",
+      "published": false,
+      "images": [
+        {
+          "filename": "November on the Court_Final_2024_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2024
+    },
+    {
+      "slug": "ny-pavilion-in-frame",
+      "title": "NY Pavilion in Frame",
+      "sourceFolder": "content/2024/NY Pavilion in Frame",
+      "images": [
+        {
+          "filename": "NY Pavilion_Final_2024_web.jpg",
+          "shown": true
+        },
+        {
+          "filename": "IMG_5003_web.jpg",
+          "shown": false
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [
+        "architecture"
+      ],
+      "year": 2024
+    },
+    {
+      "slug": "rooster-painting-2024",
+      "title": "Rooster painting_2024",
+      "sourceFolder": "content/2024/Rooster painting_2024",
+      "published": false,
+      "images": [
+        {
+          "filename": "Rooster Painting_2024_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2024
+    },
+    {
+      "slug": "shiny-diner",
+      "title": "Shiny Diner",
+      "sourceFolder": "content/2024/Shiny Diner",
+      "published": false,
+      "images": [
+        {
+          "filename": "Shiny Diner_Final_2024_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2024
+    },
+    {
+      "slug": "sunburst-painting",
+      "title": "Sunburst painting",
+      "sourceFolder": "content/2024/Sunburst painting",
+      "published": false,
+      "images": [
+        {
+          "filename": "Sunburst sunset painting_2024_web.png",
+          "shown": true
+        },
+        {
+          "filename": "Sunburst_framed_2024_web.jpg",
+          "shown": false
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2024
+    },
+    {
+      "slug": "the-oxbow-past-and-present",
+      "title": "The Oxbow, Past and Present",
+      "sourceFolder": "content/2024/The Oxbow, Past and Present",
+      "published": false,
+      "images": [
+        {
+          "filename": "Oxbow_past cropped_2024_web.png",
+          "shown": true
+        },
+        {
+          "filename": "Oxbow_present cropped_2024_web.png",
+          "shown": false
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2024
+    },
+    {
+      "slug": "town-hall-at-night",
+      "title": "Town Hall at Night",
+      "sourceFolder": "content/2024/Town Hall at Night",
+      "published": false,
+      "images": [
+        {
+          "filename": "Windham Town Hall at Night_Final_2024_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2024
+    },
+    {
+      "slug": "waffle-house-at-night",
+      "title": "Waffle House at Night",
+      "sourceFolder": "content/2024/Waffle House at Night",
+      "published": false,
+      "images": [
+        {
+          "filename": "Waffle House_Final_2024_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2024
+    },
+    {
+      "slug": "moon-behind-the-clouds",
+      "title": "Moon Behind the Clouds",
+      "sourceFolder": "content/2023/Moon Behind the Clouds",
+      "published": false,
+      "images": [
+        {
+          "filename": "Moon Behind the Clouds_2023_web.png",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2023
+    },
+    {
+      "slug": "town-hall-painting-donation-in-2023",
+      "title": "Town Hall painting donation in 2023",
+      "sourceFolder": "content/2023/Town Hall painting donation in 2023",
+      "published": false,
+      "images": [
+        {
+          "filename": "IMG_4830_web.jpg",
+          "shown": true
+        },
+        {
+          "filename": "IMG_4832_web.jpg",
+          "shown": false
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2023
+    },
+    {
+      "slug": "jupiter-from-webb-telescope",
+      "title": "Jupiter_from_Webb_Telescope",
+      "sourceFolder": "content/2022/Jupiter_from_Webb_Telescope",
+      "published": false,
+      "images": [
+        {
+          "filename": "Jupiter from Webb Telescope_Final_2022_web.png",
+          "shown": true
+        },
+        {
+          "filename": "Jupiter cropped_2022_web.jpg",
+          "shown": false
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2022
+    },
+    {
+      "slug": "nebula-i-from-webb-telescope",
+      "title": "Nebula_I_from_Webb_Telescope",
+      "sourceFolder": "content/2022/Nebula_I_from_Webb_Telescope",
+      "published": false,
+      "images": [
+        {
+          "filename": "Nebula I from Webb Telescope_Final_2022_web.jpg",
+          "shown": true
+        },
+        {
+          "filename": "Nebula I closeup_2022_web.jpg",
+          "shown": false
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2022
+    },
+    {
+      "slug": "nebula-ii-from-webb-telescope",
+      "title": "Nebula_II_from_Webb_Telescope",
+      "sourceFolder": "content/2022/Nebula_II_from_Webb_Telescope",
+      "published": false,
+      "images": [
+        {
+          "filename": "Nebula II from Webb Telescope_Final_2022_web.jpg",
+          "shown": true
+        },
+        {
+          "filename": "Nebula II closeup_2022_web.jpg",
+          "shown": false
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2022
+    },
+    {
+      "slug": "three-fish",
+      "title": "Three Fish",
+      "sourceFolder": "content/2022/Three Fish",
+      "published": false,
+      "images": [
+        {
+          "filename": "Three Fish_2022_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2022
+    },
+    {
+      "slug": "charter-oak-painting-2021",
+      "title": "Charter Oak painting_2021",
+      "sourceFolder": "content/2021/Charter Oak painting_2021",
+      "published": false,
+      "images": [
+        {
+          "filename": "The Charter Oak_Final_2021_web.jpg",
+          "shown": true
+        },
+        {
+          "filename": "Charter Oak detail_1_web.jpg",
+          "shown": false
+        },
+        {
+          "filename": "Charter Oak detail_2_web.jpg",
+          "shown": false
+        },
+        {
+          "filename": "Charter Oak detail_3_web.jpg",
+          "shown": false
+        },
+        {
+          "filename": "Charter Oak detail_4_web.jpg",
+          "shown": false
+        },
+        {
+          "filename": "Charter Oak detail_5_web.jpg",
+          "shown": false
+        },
+        {
+          "filename": "Charter Oak detail_6_web.jpg",
+          "shown": false
+        },
+        {
+          "filename": "Charter Oak detail_7_web.jpg",
+          "shown": false
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2021
+    },
+    {
+      "slug": "town-hall-utility-box-2021",
+      "title": "Town Hall Utility Box_2021",
+      "sourceFolder": "content/2021/Town Hall Utility Box_2021",
+      "published": false,
+      "images": [
+        {
+          "filename": "Town Hall Utility Box_image 12_2021_web.jpg",
+          "shown": true
+        },
+        {
+          "filename": "Town Hall Utility Box_image 18_2021_web.jpg",
+          "shown": false
+        },
+        {
+          "filename": "Town Hall Utility Box_image 21_2021_web.jpg",
+          "shown": false
+        },
+        {
+          "filename": "Town Hall Utility Box_image 4_2021_web.jpg",
+          "shown": false
+        },
+        {
+          "filename": "Town Hall Utility Box_image 5_2021_web.jpg",
+          "shown": false
+        },
+        {
+          "filename": "Town Hall Utility Box_image 6_2021_web.jpg",
+          "shown": false
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2021
+    },
+    {
+      "slug": "a-modern-penn-station",
+      "title": "A Modern Penn Station",
+      "sourceFolder": "content/2020/A Modern Penn Station",
+      "published": false,
+      "images": [
+        {
+          "filename": "A Modern Penn Station_ Final_2020_web.jpg",
+          "shown": true
+        },
+        {
+          "filename": "A Modern Penn Station_closeup_2020_web.jpg",
+          "shown": false
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2020
+    },
+    {
+      "slug": "amy-m-hart-mountain-painting",
+      "title": "Amy M. Hart mountain painting",
+      "sourceFolder": "content/2020/Amy M. Hart mountain painting",
+      "published": false,
+      "images": [
+        {
+          "filename": "Mountain Painting commission_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2020
+    },
+    {
+      "slug": "idle-hour",
+      "title": "Idle Hour",
+      "sourceFolder": "content/2020/Idle Hour",
+      "published": false,
+      "images": [
+        {
+          "filename": "Idle Hour_Self Portrait, Age 24_2020_web.jpg",
+          "shown": true
+        },
+        {
+          "filename": "Idle Hour_Self Portrait_brighter_2020_web.jpg",
+          "shown": false
+        },
+        {
+          "filename": "Idle Hour_with frame_2020_web.jpg",
+          "shown": false
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2020
+    },
+    {
+      "slug": "off-our-shores",
+      "title": "Off Our Shores",
+      "sourceFolder": "content/2020/Off Our Shores",
+      "published": false,
+      "images": [
+        {
+          "filename": "Off Our Shores_2020_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2020
+    },
+    {
+      "slug": "self-portrait-in-red",
+      "title": "Self Portrait in Red",
+      "sourceFolder": "content/2020/Self Portrait in Red",
+      "published": false,
+      "images": [
+        {
+          "filename": "Self Portrait in Red_2020_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2020
+    },
+    {
+      "slug": "shafer-auditorium-paintings",
+      "title": "shafer auditorium paintings",
+      "sourceFolder": "content/2020/shafer auditorium paintings",
+      "published": false,
+      "images": [
+        {
+          "filename": "IMG_20191103_135920787_web.jpg",
+          "shown": true
+        },
+        {
+          "filename": "Screen Shot 2019-12-28 at 8.14.44 PM_web.png",
+          "shown": false
+        },
+        {
+          "filename": "Shades of Blue and Gold_web.jpg",
+          "shown": false
+        },
+        {
+          "filename": "The Clock Tower_web.jpg",
+          "shown": false
+        },
+        {
+          "filename": "The Normal School_web.jpg",
+          "shown": false
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2020
+    },
+    {
+      "slug": "sinister-ends",
+      "title": "Sinister Ends",
+      "sourceFolder": "content/2020/Sinister Ends",
+      "published": false,
+      "images": [
+        {
+          "filename": "Sinister Ends_2020_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2020
+    },
+    {
+      "slug": "still-life-with-two-apples",
+      "title": "Still Life with Two Apples",
+      "sourceFolder": "content/2020/Still Life with Two Apples",
+      "published": false,
+      "images": [
+        {
+          "filename": "Still Life with Two Apples_submission 2_Khan_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2020
+    },
+    {
+      "slug": "winter-view-of-stearns-farm",
+      "title": "Winter View of Stearns Farm",
+      "sourceFolder": "content/2020/Winter View of Stearns Farm",
+      "published": false,
+      "images": [
+        {
+          "filename": "Winter View Of Stearns Farm_2020_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2020
+    },
+    {
+      "slug": "109-bolivia-street",
+      "title": "109 Bolivia Street",
+      "sourceFolder": "content/2019/109 Bolivia Street",
+      "published": false,
+      "images": [
+        {
+          "filename": "109 Bolivia Street_2019_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2019
+    },
+    {
+      "slug": "lights-from-the-city",
+      "title": "Lights from the City",
+      "sourceFolder": "content/2019/Lights from the City",
+      "published": false,
+      "images": [
+        {
+          "filename": "Lights from the City_2019_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2019
+    },
+    {
+      "slug": "meteor",
+      "title": "Meteor",
+      "sourceFolder": "content/2019/Meteor",
+      "published": false,
+      "images": [
+        {
+          "filename": "Meteor Final Image_2019_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2019
+    },
+    {
+      "slug": "murray-building",
+      "title": "Murray Building",
+      "sourceFolder": "content/2019/Murray Building",
+      "published": false,
+      "images": [
+        {
+          "filename": "Murray Building Final _2019_web.jpg",
+          "shown": true
+        },
+        {
+          "filename": "Murray Building before_2019_web.jpg",
+          "shown": false
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2019
+    },
+    {
+      "slug": "book-press",
+      "title": "Book Press",
+      "sourceFolder": "content/2018 and earlier/Book Press",
+      "published": false,
+      "images": [
+        {
+          "filename": "book press_web.JPG",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2018
+    },
+    {
+      "slug": "cityscape",
+      "title": "Cityscape",
+      "sourceFolder": "content/2018 and earlier/Cityscape",
+      "published": false,
+      "images": [
+        {
+          "filename": "Cityscape_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2018
+    },
+    {
+      "slug": "dappled-light",
+      "title": "Dappled Light",
+      "sourceFolder": "content/2018 and earlier/Dappled Light",
+      "published": false,
+      "images": [
+        {
+          "filename": "Dappled Light_2018_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2018
+    },
+    {
+      "slug": "eggs-in-a-sparrow-s-nest",
+      "title": "Eggs in a Sparrow-s Nest",
+      "sourceFolder": "content/2018 and earlier/Eggs in a Sparrow-s Nest",
+      "published": false,
+      "images": [
+        {
+          "filename": "Eggs in a Sparrow-s Nest-web.JPG",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2018
+    },
+    {
+      "slug": "ernie-pig",
+      "title": "Ernie Pig",
+      "sourceFolder": "content/2018 and earlier/Ernie Pig",
+      "published": false,
+      "images": [
+        {
+          "filename": "Ernie Pig_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2018
+    },
+    {
+      "slug": "first-snow",
+      "title": "First Snow",
+      "sourceFolder": "content/2018 and earlier/First Snow",
+      "published": false,
+      "images": [
+        {
+          "filename": "IMG_20180530_100537830_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2018
+    },
+    {
+      "slug": "highclere-castle",
+      "title": "Highclere Castle",
+      "sourceFolder": "content/2018 and earlier/Highclere Castle",
+      "published": false,
+      "images": [
+        {
+          "filename": "Highclere Castle_web.JPG",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2018
+    },
+    {
+      "slug": "maple-avenue",
+      "title": "Maple Avenue",
+      "sourceFolder": "content/2018 and earlier/Maple Avenue",
+      "published": false,
+      "images": [
+        {
+          "filename": "Maple Avenue_web.JPG",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2018
+    },
+    {
+      "slug": "marshfield",
+      "title": "Marshfield",
+      "sourceFolder": "content/2018 and earlier/Marshfield",
+      "published": false,
+      "images": [
+        {
+          "filename": "DSC01413_web.JPG",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2018
+    },
+    {
+      "slug": "marshfield-watercolor",
+      "title": "Marshfield watercolor",
+      "sourceFolder": "content/2018 and earlier/Marshfield watercolor",
+      "published": false,
+      "images": [
+        {
+          "filename": "DSC00142_web.JPG",
+          "shown": true
+        },
+        {
+          "filename": "DSC00149_web.JPG",
+          "shown": false
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2018
+    },
+    {
+      "slug": "mill-no-2",
+      "title": "Mill No. 2",
+      "sourceFolder": "content/2018 and earlier/Mill No. 2",
+      "published": false,
+      "images": [
+        {
+          "filename": "Mill No. 2_2018_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2018
+    },
+    {
+      "slug": "mo-and-bill-s-farm",
+      "title": "Mo and Bill-s Farm",
+      "sourceFolder": "content/2018 and earlier/Mo and Bill-s Farm",
+      "published": false,
+      "images": [
+        {
+          "filename": "Mo and Bill's House_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2018
+    },
+    {
+      "slug": "moonlit-abbey",
+      "title": "Moonlit Abbey",
+      "sourceFolder": "content/2018 and earlier/Moonlit Abbey",
+      "published": false,
+      "images": [
+        {
+          "filename": "Moonlit Abbey_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2018
+    },
+    {
+      "slug": "oak-on-the-pasture-hillside",
+      "title": "Oak on the Pasture Hillside",
+      "sourceFolder": "content/2018 and earlier/Oak on the Pasture Hillside",
+      "published": false,
+      "images": [
+        {
+          "filename": "DSC01422_web.JPG",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2018
+    },
+    {
+      "slug": "oinkibow-pig",
+      "title": "Oinkibow Pig",
+      "sourceFolder": "content/2018 and earlier/Oinkibow Pig",
+      "published": false,
+      "images": [
+        {
+          "filename": "Oinkibow Pig_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2018
+    },
+    {
+      "slug": "old-silver",
+      "title": "Old Silver",
+      "sourceFolder": "content/2018 and earlier/Old Silver",
+      "published": false,
+      "images": [
+        {
+          "filename": "Old Silver_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2018
+    },
+    {
+      "slug": "pinchot-sycamore",
+      "title": "Pinchot Sycamore",
+      "sourceFolder": "content/2018 and earlier/Pinchot Sycamore",
+      "published": false,
+      "images": [
+        {
+          "filename": "Pinchot Sycamore_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2018
+    },
+    {
+      "slug": "portrait-of-coda",
+      "title": "Portrait of Coda",
+      "sourceFolder": "content/2018 and earlier/Portrait of Coda",
+      "published": false,
+      "images": [
+        {
+          "filename": "Coda Portrait_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2018
+    },
+    {
+      "slug": "radiator-custom-painting",
+      "title": "Radiator Custom Painting",
+      "sourceFolder": "content/2018 and earlier/Radiator Custom Painting",
+      "published": false,
+      "images": [
+        {
+          "filename": "Radiator with Books mockup_web.JPG",
+          "shown": true
+        },
+        {
+          "filename": "Radiator with Books_web.JPG",
+          "shown": false
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2018
+    },
+    {
+      "slug": "schmidt-house",
+      "title": "Schmidt House",
+      "sourceFolder": "content/2018 and earlier/Schmidt House",
+      "published": false,
+      "images": [
+        {
+          "filename": "Schmidt House copy_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2018
+    },
+    {
+      "slug": "self-portrait",
+      "title": "Self Portrait",
+      "sourceFolder": "content/2018 and earlier/Self Portrait",
+      "published": false,
+      "images": [
+        {
+          "filename": "Self Portrait-web.JPG",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2018
+    },
+    {
+      "slug": "shadowlands",
+      "title": "Shadowlands",
+      "sourceFolder": "content/2018 and earlier/Shadowlands",
+      "published": false,
+      "images": [
+        {
+          "filename": "Khan_Nicholas_The Shadow Lands_web.jpg",
+          "shown": true
+        },
+        {
+          "filename": "Shadowlands triptych_web.jpg",
+          "shown": false
+        },
+        {
+          "filename": "Shadowlands_2017_web.jpg",
+          "shown": false
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2018
+    },
+    {
+      "slug": "the-central-building",
+      "title": "The Central Building",
+      "sourceFolder": "content/2018 and earlier/The Central Building",
+      "published": false,
+      "images": [
+        {
+          "filename": "Building with Blue Balloon_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2018
+    },
+    {
+      "slug": "the-foundry",
+      "title": "The Foundry",
+      "sourceFolder": "content/2018 and earlier/The Foundry",
+      "published": false,
+      "images": [
+        {
+          "filename": "The Foundry_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2018
+    },
+    {
+      "slug": "the-hidden-spot",
+      "title": "The Hidden Spot",
+      "sourceFolder": "content/2018 and earlier/The Hidden Spot",
+      "published": false,
+      "images": [
+        {
+          "filename": "DSC00134_web.JPG",
+          "shown": true
+        },
+        {
+          "filename": "DSC00162_web.JPG",
+          "shown": false
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2018
+    },
+    {
+      "slug": "the-high-bridge",
+      "title": "The High Bridge",
+      "sourceFolder": "content/2018 and earlier/The High Bridge",
+      "published": false,
+      "images": [
+        {
+          "filename": "The High Bridge_2018_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2018
+    },
+    {
+      "slug": "the-swing",
+      "title": "The Swing",
+      "sourceFolder": "content/2018 and earlier/The Swing",
+      "published": false,
+      "images": [
+        {
+          "filename": "The Swing_2018_web.jpg",
+          "shown": true
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2018
+    },
+    {
+      "slug": "thread-city-diner-mural",
+      "title": "Thread City Diner Mural",
+      "sourceFolder": "content/2018 and earlier/Thread City Diner Mural",
+      "published": false,
+      "images": [
+        {
+          "filename": "5 5 2013_pancake mural_1_web.jpg",
+          "shown": true
+        },
+        {
+          "filename": "5 5 2013_pancake mural_2_web.jpg",
+          "shown": false
+        },
+        {
+          "filename": "5 5 2013_pancake mural_4_web.jpg",
+          "shown": false
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2018
+    },
+    {
+      "slug": "view-of-monument-bluff",
+      "title": "View of Monument Bluff",
+      "sourceFolder": "content/2018 and earlier/View of Monument Bluff",
+      "published": false,
+      "images": [
+        {
+          "filename": "Khan_Nicholas_View of Monument Bluff_Final_2016_web.jpg",
+          "shown": true
+        },
+        {
+          "filename": "View of Monument Bluff_web.jpg",
+          "shown": false
+        }
+      ],
+      "hiddenImages": [],
+      "tags": [],
+      "year": 2018
     }
   ]
 }
