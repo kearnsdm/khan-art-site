@@ -208,11 +208,22 @@ main {
   .page-layout {
     grid-template-columns: 1fr;
     gap: 1.5rem;
+    /* Top padding leaves room for the hamburger button that floats in
+       the top-right corner. */
+    padding-top: 1rem;
   }
+  /* Hide the side nav by default on mobile — the hamburger reveals it.
+     Replaces the previous "stacked above content" mobile layout, which
+     pushed all the images far down the page. */
   .side-nav {
     position: static;
+    display: none;
     border-bottom: 1px solid var(--color-rule);
     padding-bottom: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  .side-nav.mobile-open {
+    display: block;
   }
 }
 

@@ -46,6 +46,22 @@ const {
   </head>
   <body>
     <Header />
+
+    <!-- Mobile-only hamburger toggle. Shown ≤ 820 px; on desktop the
+         CSS hides this and the side nav is always visible in the grid. -->
+    <button
+      type="button"
+      class="nav-toggle"
+      id="nav-toggle"
+      aria-label="Menu"
+      aria-expanded="false"
+      aria-controls="side-nav"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M3 6h18M3 12h18M3 18h18" />
+      </svg>
+    </button>
+
     <div class="page-layout">
       <SideNav
         currentSection={section}
@@ -66,7 +82,83 @@ const {
       </svg>
     </a>
 
+    <script is:inline>
+      (function () {
+        const toggle = document.getElementById("nav-toggle");
+        const nav = document.getElementById("side-nav");
+        if (!toggle || !nav) return;
+        function setOpen(open) {
+          nav.classList.toggle("mobile-open", open);
+          toggle.setAttribute("aria-expanded", String(open));
+          document.body.classList.toggle("nav-mobile-open", open);
+        }
+        toggle.addEventListener("click", () => {
+          const open = toggle.getAttribute("aria-expanded") !== "true";
+          setOpen(open);
+        });
+        // Tap a real navigation link → close. Disclosure carets and
+        // toggle-only buttons inside the nav don't get this treatment.
+        nav.querySelectorAll("a").forEach((a) => {
+          a.addEventListener("click", () => setOpen(false));
+        });
+        // Escape key closes the menu on mobile.
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape" && nav.classList.contains("mobile-open")) {
+            setOpen(false);
+            toggle.focus();
+          }
+        });
+        // Resizing back to desktop should drop the mobile-open state so
+        // the nav doesn't sit in a weird half-open layout if someone
+        // rotates a tablet or resizes a window.
+        const mq = window.matchMedia("(max-width: 820px)");
+        function onMqChange(e) {
+          if (!e.matches) setOpen(false);
+        }
+        if (mq.addEventListener) mq.addEventListener("change", onMqChange);
+        else mq.addListener(onMqChange);
+      })();
+    </script>
+
     <style>
+      /* Hamburger toggle. Hidden on desktop; the side nav is in the
+         grid as usual. On mobile (≤ 820 px) we hide the side nav by
+         default and reveal it via this button. */
+      .nav-toggle {
+        display: none;
+      }
+      @media (max-width: 820px) {
+        .nav-toggle {
+          position: fixed;
+          top: 0.8rem;
+          right: 0.8rem;
+          z-index: 90;
+          width: 44px;
+          height: 44px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0;
+          background: var(--color-panel, #faf6ec);
+          color: var(--color-accent, #1a1a1a);
+          border: 1px solid var(--color-rule, #d6cfbe);
+          cursor: pointer;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        .nav-toggle svg {
+          width: 22px;
+          height: 22px;
+          fill: none;
+          stroke: currentColor;
+          stroke-width: 2;
+          stroke-linecap: round;
+        }
+        .nav-toggle[aria-expanded="true"] {
+          background: var(--color-accent, #1a1a1a);
+          color: var(--color-bg, #f1ebde);
+        }
+      }
+
       .admin-key {
         position: fixed;
         bottom: 0.85rem;
