@@ -11,6 +11,14 @@ import {
  * `/login`. If the server is not configured for auth (no env vars), all
  * gated routes return 503 — fail closed so a misconfigured deploy can't
  * accidentally expose the admin.
+ *
+ * NOTE: /api/image is INTENTIONALLY NOT gated. After the runtime-Blobs
+ * refactor, every <img> on the public site uses /api/image to fetch
+ * bytes from Blobs storage — gating it would 401 every visitor. The
+ * endpoint only serves bytes by storage key, which the public pages
+ * already know (they generate the URLs themselves), so there's no
+ * privacy concern from leaving it open. /api/thumb stays gated — it's
+ * an admin-only thumbnail generator with extra processing cost.
  */
 const GATED_PREFIXES = [
   "/admin",
@@ -19,7 +27,6 @@ const GATED_PREFIXES = [
   "/api/save-year-groups",
   "/api/sync",
   "/api/content.json",
-  "/api/image",
   "/api/thumb",
 ];
 
