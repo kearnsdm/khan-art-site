@@ -9,11 +9,69 @@ interface Props {
 const { work } = Astro.props;
 const src = primaryImagePath(work);
 const alt = primaryImageAlt(work);
+
+// Count of images that will appear on this work's detail page. The
+// first image is always shown by convention; additional images are
+// counted in if their `shown` flag isn't explicitly false. When the
+// total is more than one we surface a small "+ N more" line so
+// visitors know to click in for additional views.
+const shownCount = work.images.filter((i) => i.shown !== false).length;
+const extras = Math.max(0, shownCount - 1);
 ---
 
 <a class="work-card" href={`/works/${work.slug}`}>
-  {src && <img class="work-thumb" src={src} alt={alt} loading="lazy" />}
+  <div class="work-thumb-wrap">
+    {src && <img class="work-thumb" src={src} alt={alt} loading="lazy" />}
+    {extras > 0 && (
+      <span
+        class="multi-badge"
+        aria-label={`${shownCount} images of this work`}
+        title={`${shownCount} images`}
+      >
+        <svg viewBox="0 0 20 20" aria-hidden="true">
+          <rect x="3" y="5" width="11" height="11" rx="1" />
+          <rect x="6" y="3" width="11" height="11" rx="1" />
+        </svg>
+        <span class="multi-badge-count">+{extras}</span>
+      </span>
+    )}
+  </div>
   <div class="work-meta">
     <p class="work-title">{workHeadline(work)}</p>
   </div>
 </a>
+
+<style>
+  .work-thumb-wrap {
+    position: relative;
+  }
+  /* Bottom-right badge calling out that a work has additional images.
+     Translucent panel background so it sits cleanly over a light or
+     dark thumbnail; small stacked-rectangles icon + "+N" count. */
+  .multi-badge {
+    position: absolute;
+    bottom: 0.5rem;
+    right: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.25rem 0.5rem;
+    background: rgba(241, 235, 222, 0.92); /* matches --color-bg */
+    color: var(--color-accent, #1a1a1a);
+    border: 1px solid var(--color-rule, #d6cfbe);
+    font-size: 0.82rem;
+    font-style: italic;
+    line-height: 1;
+    pointer-events: none;
+  }
+  .multi-badge svg {
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+  }
+  .multi-badge-count {
+    font-variant-numeric: tabular-nums;
+  }
+</style>
