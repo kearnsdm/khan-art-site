@@ -2089,36 +2089,108 @@ export const prerender = false;
         status.className = ok ? "status success" : "status";
       }
 
-      // Cap matches the server-side MAX_FILE_BYTES (5 MB on free-tier
-      // Netlify). Anything bigger we reject client-side with a clear
-      // message rather than wasting bandwidth.
+      // Netlify Free / Starter limits request bodies to ~6 MB. After
+      // multipart overhead we have ~5 MB of headroom for the actual
+      // file. Files over this trigger an automatic client-side resize
+      // (Canvas API, runs in Nicholas's browser, free, no server work).
       const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
+      // Target dimensions / quality for the auto-resize. 2400 px on the
+      // long side is plenty for "view large" zoom; 85% JPEG is visually
+      // indistinguishable from a higher-quality export for photos of
+      // paintings. Tune if Nicholas ever asks for sharper.
+      const RESIZE_MAX_DIM = 2400;
+      const RESIZE_QUALITY = 0.85;
+
+      // Browser-native image resize via Canvas. Loads the file as an
+      // <img>, draws it to a canvas at the reduced size, and exports
+      // as JPEG. The original file on Drive is untouched — we only
+      // shrink the copy we're about to upload.
+      function loadImageFromBlob(blob) {
+        return new Promise((resolve, reject) => {
+          const url = URL.createObjectURL(blob);
+          const img = new Image();
+          img.onload = () => {
+            // Don't revoke yet — `naturalWidth/Height` need the source.
+            resolve({ img, url });
+          };
+          img.onerror = () => {
+            URL.revokeObjectURL(url);
+            reject(new Error("Browser couldn't decode this image"));
+          };
+          img.src = url;
+        });
+      }
+
+      async function resizeToJpegBlob(file) {
+        const { img, url } = await loadImageFromBlob(file);
+        const longSide = Math.max(img.naturalWidth, img.naturalHeight);
+        const scale = longSide > RESIZE_MAX_DIM ? RESIZE_MAX_DIM / longSide : 1;
+        const w = Math.max(1, Math.round(img.naturalWidth * scale));
+        const h = Math.max(1, Math.round(img.naturalHeight * scale));
+        const canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          URL.revokeObjectURL(url);
+          throw new Error("Couldn't open canvas to resize");
+        }
+        ctx.drawImage(img, 0, 0, w, h);
+        URL.revokeObjectURL(url);
+        const blob = await new Promise((resolve) =>
+          canvas.toBlob(resolve, "image/jpeg", RESIZE_QUALITY)
+        );
+        if (!blob) throw new Error("Couldn't encode resized JPEG");
+        return blob;
+      }
+
+      // Whether this file needs re-encoding. We trigger on size OR on
+      // PNG extension specifically — even smaller PNGs of paintings
+      // re-encode much smaller as JPEG, helping the overall sync.
+      function shouldResize(file, originalBaseName) {
+        if (file.size > MAX_UPLOAD_BYTES) return true;
+        return false;
+      }
+
+      // The path we'll actually upload to. If we're going to resize +
+      // re-encode the file, the on-server name uses .jpg so the MIME
+      // type matches the stored bytes. The "_web" suffix stays —
+      // isPublishable() server-side keeps accepting it.
+      function plannedUploadPath(innerPath, file) {
+        if (!shouldResize(file)) return innerPath;
+        return innerPath.replace(/\.[^./]+$/, ".jpg");
+      }
 
       async function uploadOne(filePath, file) {
-        if (file.size > MAX_UPLOAD_BYTES) {
-          const mb = (file.size / 1024 / 1024).toFixed(1);
-          throw new Error(
-            `"${filePath}" is ${mb} MB — too large for the website to accept ` +
-            `(max ~5 MB per file). Re-export this image at a smaller size or ` +
-            `convert PNG → JPEG and try again.`
-          );
+        let payload = file;
+        // Auto-resize if the file is too big OR if it would benefit
+        // from re-encoding. Errors here are caught by the outer loop
+        // so one bad file doesn't kill the sync.
+        if (shouldResize(file)) {
+          payload = await resizeToJpegBlob(file);
+          if (payload.size > MAX_UPLOAD_BYTES) {
+            const mb = (payload.size / 1024 / 1024).toFixed(1);
+            throw new Error(
+              `still ${mb} MB after auto-resize — image is unusually huge. ` +
+              `Try re-exporting smaller manually.`
+            );
+          }
         }
         const fd = new FormData();
         fd.append("path", filePath);
-        fd.append("file", file, file.name);
+        // The third arg names the part file inside the multipart body.
+        // Use the path's basename so the server gets a sensible name
+        // even though it only uses the `path` field for storage.
+        const baseName = filePath.split("/").pop() || "upload.bin";
+        fd.append("file", payload, baseName);
         const r = await fetch("/api/sync/upload", { method: "POST", body: fd });
         let j = {};
         try { j = await r.json(); } catch {}
         if (!r.ok) {
-          // Netlify itself returns 413 when the multipart body is too
-          // large to even reach the function. Surface a helpful note.
           if (r.status === 413) {
-            throw new Error(
-              `"${filePath}" too large for the website to accept ` +
-              `(max ~5 MB per file). Re-export smaller or use JPEG.`
-            );
+            throw new Error("file too large for the website to accept even after resize");
           }
-          throw new Error(j.error || `HTTP ${r.status} uploading ${filePath}`);
+          throw new Error(j.error || `HTTP ${r.status}`);
         }
         return j;
       }
@@ -2168,7 +2240,19 @@ export const prerender = false;
             skippedNoWeb++;
             continue;
           }
-          entries.push({ path: inner, size: f.size, file: f });
+          // The "path" we send to the server is the path it'll actually
+          // be stored at — which may differ from the original path on
+          // disk if we're going to auto-resize this file (PNG → JPEG
+          // means the extension changes). Compute that up front so the
+          // server's dedup check matches what we'll actually upload.
+          const uploadPath = plannedUploadPath(inner, f);
+          entries.push({
+            path: uploadPath,
+            originalPath: inner,
+            size: f.size,
+            file: f,
+            willResize: uploadPath !== inner,
+          });
         }
 
         // Console summary helps diagnose surprises like the Web.png case.
@@ -2208,19 +2292,60 @@ export const prerender = false;
             `All ${entries.length} matching file${entries.length === 1 ? " is" : "s are"} already on the website. Nothing new to upload.`,
             true
           );
-          return { uploaded: 0, skipped: entries.length, total: entries.length };
+          return { uploaded: 0, skipped: entries.length, total: entries.length, failed: 0 };
         }
 
+        // Resilient upload loop: each file gets its own try/catch so one
+        // bad image doesn't stop the rest. We collect failures and
+        // report them at the end alongside the successes.
         let done = 0;
+        let succeeded = 0;
+        const failures = [];
         for (const e of toUpload) {
-          statusMsg(`Uploading ${++done} of ${toUpload.length} new file${toUpload.length === 1 ? "" : "s"}…`, false);
-          await uploadOne(e.path, e.file);
+          done++;
+          const noteResize = e.willResize ? " (re-encoding…)" : "";
+          statusMsg(
+            `Uploading ${done} of ${toUpload.length} new file${toUpload.length === 1 ? "" : "s"}${noteResize}…`,
+            false
+          );
+          try {
+            await uploadOne(e.path, e.file);
+            succeeded++;
+          } catch (err) {
+            const msg = err && err.message ? err.message : String(err);
+            failures.push({ path: e.originalPath || e.path, error: msg });
+            console.error(`[sync] ${e.originalPath || e.path}:`, msg);
+          }
         }
-        statusMsg(
-          `Uploaded ${toUpload.length} new file${toUpload.length === 1 ? "" : "s"}. (${entries.length - toUpload.length} already on the website were skipped.)`,
-          true
-        );
-        return { uploaded: toUpload.length, skipped: entries.length - toUpload.length, total: entries.length };
+
+        const skipped = entries.length - toUpload.length;
+        if (failures.length === 0) {
+          statusMsg(
+            `Uploaded ${succeeded} new file${succeeded === 1 ? "" : "s"}. (${skipped} already on the website were skipped.)`,
+            true
+          );
+        } else {
+          // Sync didn't stop on the failures — finish reporting what
+          // succeeded, then surface the per-file errors in the alert
+          // banner so Nicholas can fix the originals if he wants.
+          statusMsg(
+            `Uploaded ${succeeded} new file${succeeded === 1 ? "" : "s"}. ${failures.length} couldn't upload — see details above.`,
+            succeeded > 0
+          );
+          const lines = failures.slice(0, 20).map((f) => `• ${f.path}\n   ${f.error}`);
+          const more = failures.length > 20 ? `\n... and ${failures.length - 20} more.` : "";
+          showAlert(
+            `${failures.length} file${failures.length === 1 ? "" : "s"} didn't upload, but the rest of the sync continued:\n\n` +
+            lines.join("\n") +
+            more
+          );
+        }
+        return {
+          uploaded: succeeded,
+          skipped,
+          failed: failures.length,
+          total: entries.length,
+        };
       }
 
       refreshBtn.addEventListener("click", () => {
