@@ -2236,7 +2236,11 @@ export const prerender = false;
             skippedNonImage++;
             continue;
           }
-          if (!/[_\-\s.]web$/i.test(stem)) {
+          // Mirror server-side WEB_SUFFIX_RE: filename stem ends with
+          // "web" preceded by any of underscore / hyphen / space / dot /
+          // opening paren / opening bracket. An optional closing paren
+          // or bracket can trail (handles "Painting (web).jpg").
+          if (!/[_\-\s.()\[\]]web[)\]]*$/i.test(stem)) {
             skippedNoWeb++;
             continue;
           }

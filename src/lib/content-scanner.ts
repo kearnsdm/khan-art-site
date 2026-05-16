@@ -37,24 +37,26 @@ const IMAGE_EXTS = new Set([
  * Convention for which files are imported into the picker:
  *   - Must be an image extension (`IMAGE_EXTS`)
  *   - Filename stem (before extension) must end with the marker "web"
- *     PRECEDED BY A SEPARATOR — case-insensitive. The required separator
- *     prevents accidental matches against generic names like Photoshop's
- *     default "Web.png" save-for-web output.
+ *     preceded by a separator — case-insensitive. Accepted separators:
+ *     underscore, hyphen, space, dot, opening paren/bracket. An
+ *     optional closing paren/bracket can trail.
  *
- *   Painting_web.jpg          ✓  underscore separator
- *   Painting-web.jpg          ✓  hyphen separator
- *   Painting web.jpg          ✓  space separator
- *   Painting.web.jpg          ✓  dot separator
+ *   Painting_web.jpg          ✓  underscore
+ *   Painting-web.jpg          ✓  hyphen
+ *   Painting web.jpg          ✓  space
+ *   Painting.web.jpg          ✓  dot
+ *   Painting (web).jpg        ✓  parens — common naming convention
+ *   Painting [web].png        ✓  brackets
  *   Painting_Final_WEB.JPG    ✓  case-insensitive
  *   Painting_web.webp         ✓  (.webp extension is unrelated)
- *   Web.png                   ✗  starts with "Web", no separator before
- *   Paintingweb.jpg           ✗  no separator before "web"
- *   Painting_webcam.jpg       ✗  doesn't end with "web"
+ *   Web.png                   ✗  no separator before "web"
+ *   Paintingweb.jpg           ✗  no separator
+ *   Painting_webcam.jpg       ✗  doesn't end at "web"
  *   Painting.jpg              ✗  no marker
  *
  * Anything else stays on Drive but never enters the site's storage.
  */
-const WEB_SUFFIX_RE = /[_\-\s.]web$/i;
+const WEB_SUFFIX_RE = /[_\-\s.()\[\]]web[)\]]*$/i;
 
 export function isPublishable(filename: string): boolean {
   const baseName = filename.split(/[\\/]/).pop() ?? filename;
