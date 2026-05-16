@@ -12,20 +12,27 @@ const formAction = "";
     <section id="about" class="about-section">
       <h2 class="page-title">About</h2>
 
-      <!-- Bio paragraphs and the portrait sit side-by-side on desktop
-           and stack on narrow screens. The image floats to the right
-           of the first paragraph so the text wraps around it naturally
-           on wider viewports; on phones we fall back to the image
-           appearing above the text via the media query at the bottom
-           of this file. -->
+      <!-- Bio paragraphs sit on the left; two portrait photos stack
+           vertically on the right column on desktop. On phones the
+           whole right column moves above the bio text so it stays
+           readable and the photos appear side-by-side at the top. -->
       <div class="bio-layout">
-        <figure class="bio-portrait">
-          <img
-            src="/about/nicholas-portrait.jpg"
-            alt="Nicholas Khan standing in front of one of his paintings"
-            loading="eager"
-          />
-        </figure>
+        <div class="bio-photos">
+          <figure>
+            <img
+              src="/about/nicholas-portrait.jpg"
+              alt="Nicholas Khan standing in front of one of his paintings"
+              loading="eager"
+            />
+          </figure>
+          <figure>
+            <img
+              src="/about/nicholas-painting.jpg"
+              alt="Nicholas Khan painting his own self-portrait"
+              loading="eager"
+            />
+          </figure>
+        </div>
         <div class="prose bio-text">
           <p>
             Nicholas Khan is a visual artist based in Raleigh, North Carolina
@@ -105,22 +112,27 @@ const formAction = "";
     scroll-margin-top: 1.5rem;
   }
 
-  /* Bio + portrait side-by-side on desktop. The portrait sits at a
-     fixed width so it doesn't dominate the column; the bio text fills
-     the remaining space. */
+  /* Bio text + portrait column side-by-side on desktop. The right
+     column stays at a fixed width so it doesn't dominate the page;
+     bio text on the left fills the remaining space. The two photos
+     stack vertically inside that right column. */
   .bio-layout {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 280px;
     gap: 2rem;
     align-items: start;
   }
-  .bio-portrait {
-    margin: 0;
-    /* Push the figure to the column it's been assigned to (right). */
+  .bio-photos {
     grid-column: 2;
     grid-row: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
   }
-  .bio-portrait img {
+  .bio-photos figure {
+    margin: 0;
+  }
+  .bio-photos img {
     display: block;
     width: 100%;
     height: auto;
@@ -131,20 +143,25 @@ const formAction = "";
     grid-row: 1;
   }
 
-  /* Stack on phones: portrait above the text, full width but capped so
-     it doesn't take over the screen. */
+  /* Phones: photos move above the text, side-by-side at the top so
+     both stay visible without endless scrolling before the bio. */
   @media (max-width: 720px) {
     .bio-layout {
       grid-template-columns: 1fr;
     }
-    .bio-portrait,
+    .bio-photos,
     .bio-text {
       grid-column: 1;
       grid-row: auto;
     }
-    .bio-portrait img {
-      max-width: 320px;
-      margin: 0 auto;
+    .bio-photos {
+      flex-direction: row;
+      gap: 0.75rem;
+      justify-content: center;
+    }
+    .bio-photos figure {
+      flex: 1 1 0;
+      max-width: 220px;
     }
   }
 </style>
