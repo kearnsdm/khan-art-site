@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro";
 import { promises as fs } from "node:fs";
 import { createReadStream } from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import crypto from "node:crypto";
 import sharp from "sharp";
@@ -9,7 +10,19 @@ import { contentStorage, usingBlobs } from "../../lib/content-storage";
 
 export const prerender = false;
 
-const CACHE_DIR = path.join(projectRoot(), ".cache", "thumbs");
+/**
+ * Where we cache generated JPEG thumbnails on disk.
+ *
+ * On Netlify Functions, the bundled code at /var/task is READ-ONLY, so
+ * writing to `<projectRoot>/.cache/thumbs/` blows up with EROFS — which
+ * is why every thumbnail came back 500 in production while /api/image
+ * (no disk write) worked fine. The only writable spot in a Lambda is
+ * the per-instance tmpfs at /tmp. Locally we keep the project-relative
+ * cache so it survives dev restarts.
+ */
+const CACHE_DIR = usingBlobs()
+  ? path.join(os.tmpdir(), "khan-art-thumbs")
+  : path.join(projectRoot(), ".cache", "thumbs");
 const DEFAULT_SIZE = 600;
 const MAX_SIZE = 1200;
 

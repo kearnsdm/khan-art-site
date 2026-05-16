@@ -1194,11 +1194,15 @@ export const prerender = false;
             (n, s) => n + s.images.filter((i) => i.featured && i.shown).length,
             0
           );
+        // Image-file count across all works — this is the unit the sync
+        // status uses ("Uploaded N new files"), so showing it alongside
+        // the works count makes the two numbers reconcilable.
+        const totalImages = state.reduce((n, s) => n + s.images.length, 0);
         const newCount = state.filter((s) => s.isNew).length;
         const newPiece = newCount > 0 ? ` · ${newCount} new` : "";
         const visible = visibleState();
         const visiblePiece = visible.length === total ? "" : ` · ${visible.length} shown`;
-        summary.textContent = `${total} scanned · ${included} on site · ${featuredImgCount} image${featuredImgCount === 1 ? "" : "s"} on home page${newPiece}${visiblePiece}`;
+        summary.textContent = `${total} work${total === 1 ? "" : "s"} (${totalImages} image${totalImages === 1 ? "" : "s"}) · ${included} on site · ${featuredImgCount} image${featuredImgCount === 1 ? "" : "s"} on home page${newPiece}${visiblePiece}`;
 
         validateState();
 
@@ -2161,6 +2165,23 @@ export const prerender = false;
         return innerPath.replace(/\.[^./]+$/, ".jpg");
       }
 
+      // Single attempt at POSTing the file to /api/sync/upload. Reads
+      // the body as text first so we can surface a useful error even
+      // when the function returned non-JSON (e.g. a Netlify edge timeout
+      // page). Returns { ok, status, json, text } so the caller can
+      // decide whether to retry.
+      async function postUploadOnce(filePath, payload) {
+        const fd = new FormData();
+        fd.append("path", filePath);
+        const baseName = filePath.split("/").pop() || "upload.bin";
+        fd.append("file", payload, baseName);
+        const r = await fetch("/api/sync/upload", { method: "POST", body: fd });
+        const text = await r.text();
+        let json = null;
+        try { json = JSON.parse(text); } catch {}
+        return { ok: r.ok, status: r.status, json, text };
+      }
+
       async function uploadOne(filePath, file) {
         let payload = file;
         // Auto-resize if the file is too big OR if it would benefit
@@ -2176,23 +2197,39 @@ export const prerender = false;
             );
           }
         }
-        const fd = new FormData();
-        fd.append("path", filePath);
-        // The third arg names the part file inside the multipart body.
-        // Use the path's basename so the server gets a sensible name
-        // even though it only uses the `path` field for storage.
         const baseName = filePath.split("/").pop() || "upload.bin";
-        fd.append("file", payload, baseName);
-        const r = await fetch("/api/sync/upload", { method: "POST", body: fd });
-        let j = {};
-        try { j = await r.json(); } catch {}
+
+        // Retry once on transient 5xx — most of the failures we've seen
+        // are Blobs API hiccups (rate limiting, brief network errors,
+        // cold-start timeouts). A second attempt usually succeeds.
+        // 4xx errors (bad request, oversize) won't get better with a
+        // retry so we surface them immediately.
+        let r = await postUploadOnce(filePath, payload);
+        if (!r.ok && r.status >= 500) {
+          // Small backoff to let whatever was wrong recover.
+          await new Promise((resolve) => setTimeout(resolve, 750));
+          r = await postUploadOnce(filePath, payload);
+        }
+
         if (!r.ok) {
           if (r.status === 413) {
             throw new Error("file too large for the website to accept even after resize");
           }
-          throw new Error(j.error || `HTTP ${r.status}`);
+          // Prefer the server's structured message; fall back to the
+          // raw response text (trimmed) so transient gateway errors
+          // don't show up as a bare "HTTP 500".
+          const serverMsg = r.json && r.json.error;
+          if (serverMsg) {
+            throw new Error(serverMsg);
+          }
+          const snippet = (r.text || "").trim().slice(0, 180);
+          throw new Error(
+            snippet
+              ? `HTTP ${r.status}: ${snippet}`
+              : `HTTP ${r.status} (no message from server)`
+          );
         }
-        return j;
+        return r.json || {};
       }
 
       async function syncFromFolder(fileList) {
