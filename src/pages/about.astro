@@ -7,27 +7,30 @@ import Layout from "../layouts/Layout.astro";
 const formAction = "";
 ---
 
-<Layout title="About — Nicholas Hart Khan" section="bio">
+<Layout title="About | Contact — Nicholas Hart Khan" section="bio">
   <article class="about-page">
     <section id="about" class="about-section">
-      <h2 class="page-title">About</h2>
+      <h2 class="page-title">About | Contact</h2>
 
       <!-- Bio paragraphs sit on the left; two portrait photos stack
            vertically on the right column on desktop. On phones the
            whole right column moves above the bio text so it stays
-           readable and the photos appear side-by-side at the top. -->
+           readable and the photos appear side-by-side at the top.
+           Image filenames are the actual files Devin dropped into
+           public/about/; Netlify is case-sensitive on static URLs
+           so the .JPG vs .jpg distinction matters. -->
       <div class="bio-layout">
         <div class="bio-photos">
           <figure>
             <img
-              src="/about/nicholas-portrait.jpg"
-              alt="Nicholas Khan standing in front of one of his paintings"
+              src="/about/nicholas-portrait-real-web.JPG"
+              alt="Nicholas Khan"
               loading="eager"
             />
           </figure>
           <figure>
             <img
-              src="/about/nicholas-painting.jpg"
+              src="/about/nicholas-portrait-web.jpg"
               alt="Nicholas Khan painting his own self-portrait"
               loading="eager"
             />
