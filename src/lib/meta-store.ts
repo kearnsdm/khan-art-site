@@ -35,21 +35,24 @@ const encoder = new TextEncoder();
 
 /**
  * Read a JSON metadata blob from storage. Returns null if the key
- * isn't present — callers decide whether to fall back to bundled data
- * or treat the absence as "no data yet".
+ * isn't present, the bytes can't be parsed as JSON, or the storage
+ * layer threw for any reason. Callers fall back to bundled defaults
+ * on null — never on a thrown exception, so this function MUST NOT
+ * throw, otherwise SSR pages will 500 instead of degrading
+ * gracefully to the bundled fallback.
  */
 export async function loadMeta<T>(key: string): Promise<T | null> {
-  const store = contentStorage();
-  const bytes = await store.get(key);
-  if (!bytes) return null;
   try {
+    const store = contentStorage();
+    const bytes = await store.get(key);
+    if (!bytes) return null;
     const text = decoder.decode(bytes);
     return JSON.parse(text) as T;
-  } catch {
-    // Corrupt JSON shouldn't crash the site — treat as missing and let
-    // the caller fall back. We surface this as a console.error so it
-    // shows up in Netlify function logs without taking the page down.
-    console.error("[meta-store] could not parse", key);
+  } catch (err) {
+    // Surface to function logs so we can diagnose later, but never
+    // throw — public pages depend on this being non-fatal.
+    const message = err instanceof Error ? err.message : String(err);
+    console.error(`[meta-store] read failed for ${key}: ${message}`);
     return null;
   }
 }

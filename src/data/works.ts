@@ -165,10 +165,16 @@ function mergeMeta(input: Partial<SiteMeta> | undefined): SiteMeta {
   };
 }
 
-function migrateRaw(raw: RawWorksData): WorksData {
+function migrateRaw(raw: RawWorksData | null | undefined): WorksData {
+  // Defensive: accept any shape from storage. The previous version
+  // crashed with "Cannot read property 'map' of undefined" if Blobs
+  // had a JSON value without a `works` array — which then 500'd
+  // every public-facing SSR page. Treat missing or non-array `works`
+  // as empty and let the rest of the site render normally.
+  const works = Array.isArray(raw?.works) ? raw.works as LegacyWork[] : [];
   return {
-    works: (raw.works as LegacyWork[]).map(migrateWork),
-    siteMeta: mergeMeta(raw.meta),
+    works: works.map(migrateWork),
+    siteMeta: mergeMeta(raw?.meta),
   };
 }
 
