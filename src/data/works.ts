@@ -1,20 +1,20 @@
-import worksData from "./works.json";
+import bundledWorksData from "./works.json";
+import { loadMetaWithFallback, META_KEYS } from "../lib/meta-store";
 
 /**
  * One image of a Work, stored in display order.
  *
- *   filename  — basename only (e.g. "IMG_9955.jpg"). Used to build the
- *               public URL `/works/<slug>/<filename>`.
+ *   filename   — basename only (e.g. "IMG_9955.jpg").
  *   sourceFile — path relative to the work's sourceFolder, including any
- *               subfolders (e.g. "Raleigh Final Photos edited/X.jpg").
- *               Used by the admin to locate the original on disk. May be
- *               undefined for legacy data; fall back to `filename`.
+ *                subfolders (e.g. "Raleigh Final Photos edited/X.jpg").
+ *                Used by the admin to locate the original on disk. May
+ *                be undefined for legacy data; fall back to `filename`.
  *   shown      — appears on the work's detail page on the public site.
- *               The first image in `images[]` is always implicitly shown.
+ *                The first image in `images[]` is always implicitly shown.
  *   featured   — appears in the home page carousel. Featured ⇒ shown.
  *   caption    — optional subtitle shown beneath this specific image.
  *   status     — availability: "nfs" or "sold". Shown in an understated
- *               italicized line under the image's caption.
+ *                italicized line under the image's caption.
  */
 export interface WorkImage {
   filename: string;
@@ -57,6 +57,17 @@ export type DisplayOrder = "year-month" | "year-sequence";
 export interface SiteMeta {
   displayOrder: DisplayOrder;
   hiddenWorks: string[];
+}
+
+/**
+ * Bundle: every public-facing helper takes one of these. We compute it
+ * once per SSR request via `loadWorksData()` and thread it through.
+ * Keeping it as a single object means pages and components can pass
+ * `data` down to children without bikeshedding which fields they need.
+ */
+export interface WorksData {
+  works: Work[];
+  siteMeta: SiteMeta;
 }
 
 const DEFAULT_META: SiteMeta = {
@@ -136,8 +147,6 @@ function migrateWork(input: LegacyWork): Work {
     day: typeof input.day === "number" ? input.day : undefined,
     sequence: typeof input.sequence === "number" ? input.sequence : undefined,
     sourceFolder: input.sourceFolder,
-    // Default to published=true for back-compat: entries written before
-    // the `published` field existed were always implicitly published.
     published: input.published !== false,
     images,
     hiddenImages,
@@ -156,33 +165,86 @@ function mergeMeta(input: Partial<SiteMeta> | undefined): SiteMeta {
   };
 }
 
-const raw = worksData as unknown as RawWorksData;
-
-/**
- * Full list of every work in works.json — published and unpublished
- * alike. Used by the admin (which needs to see drafts) and by the work
- * detail-page builder (which prerenders one page per slug, including
- * drafts so direct URLs still resolve).
- *
- * The PUBLIC-facing helpers below (`worksByYear`, `featuredImages`, etc.)
- * filter this list to only `published === true` so unpublished works
- * never show in galleries, side-nav, or the homepage carousel.
- */
-export const works: Work[] = (raw.works as LegacyWork[]).map(migrateWork);
-
-/** Only the works actually visible on the public site. */
-function publishedWorks(): Work[] {
-  return works.filter((w) => w.published !== false);
+function migrateRaw(raw: RawWorksData): WorksData {
+  return {
+    works: (raw.works as LegacyWork[]).map(migrateWork),
+    siteMeta: mergeMeta(raw.meta),
+  };
 }
 
-export const siteMeta: SiteMeta = mergeMeta(raw.meta);
+/**
+ * Read the current works payload. In production this hits Netlify Blobs
+ * (key `_meta/works.json`); in dev it hits the filesystem store; in
+ * either case, if storage has nothing yet we fall back to the bundled
+ * `src/data/works.json` shipped with the build. That bundled file is
+ * what's currently visible on the public site, so the first deploy of
+ * this refactor doesn't blank the site out — Nicholas's first save
+ * just replaces it.
+ *
+ * No module-level caching: each SSR render does one read. Reads are
+ * fast (single Blobs fetch, ~50 ms) and skipping the cache means
+ * Nicholas's saves appear on the public site the moment he hits Save.
+ */
+export async function loadWorksData(): Promise<WorksData> {
+  const raw = await loadMetaWithFallback<RawWorksData>(
+    META_KEYS.works,
+    bundledWorksData as unknown as RawWorksData
+  );
+  return migrateRaw(raw);
+}
 
-// ---------- derived helpers ----------
+// ---------- pure helpers (all take a WorksData) ----------
+
+export function publishedWorks(data: WorksData): Work[] {
+  return data.works.filter((w) => w.published !== false);
+}
+
+export function workBySlug(data: WorksData, slug: string): Work | undefined {
+  return data.works.find((w) => w.slug === slug);
+}
+
+/**
+ * Storage key for the image bytes of a given work image. This is the
+ * key /api/image?path=... expects. It strips the leading "content/"
+ * prefix from sourceFolder (the storage layer is rooted there) and
+ * appends sourceFile (if present, includes subfolders) or filename.
+ *
+ * For loose-file works (sourceFolder itself points at an image), the
+ * key IS the stripped sourceFolder — there's no nested file to append.
+ */
+export function imageStorageKey(work: Work, image: WorkImage): string {
+  const stripped = work.sourceFolder.replace(/^content\//, "");
+  const looseFile =
+    !work.sourceFolder.includes("/") && /\.[a-z0-9]+$/i.test(work.sourceFolder);
+  if (looseFile) return stripped;
+  const rel =
+    image.sourceFile && image.sourceFile.length > 0
+      ? image.sourceFile
+      : image.filename;
+  return `${stripped}/${rel}`;
+}
+
+/**
+ * Public URL for serving the bytes of a work image. Always routes
+ * through /api/image so we can read from Blobs (production) or the
+ * local CONTENT_ROOT (dev) without the calling page needing to know
+ * where the bytes live.
+ *
+ * We tack `slug` on as a hint so /api/image can fall back to the
+ * bundled `public/works/<slug>/<basename>` file when the Blobs key
+ * isn't present. That covers the seeded works whose images were
+ * copied into the static bundle during the test phase but never
+ * (re-)uploaded to Blobs.
+ */
+export function imageUrl(work: Work, image: WorkImage): string {
+  const key = imageStorageKey(work, image);
+  return `/api/image?path=${encodeURIComponent(key)}&slug=${encodeURIComponent(work.slug)}`;
+}
 
 export function primaryImagePath(work: Work): string {
   const first = work.images[0];
   if (!first) return "";
-  return `/works/${work.slug}/${first.filename}`;
+  return imageUrl(work, first);
 }
 
 export function primaryImageAlt(work: Work): string {
@@ -194,7 +256,7 @@ export function detailImages(work: Work): { path: string; image: WorkImage }[] {
   return work.images
     .slice(1)
     .filter((i) => i.shown)
-    .map((i) => ({ path: `/works/${work.slug}/${i.filename}`, image: i }));
+    .map((i) => ({ path: imageUrl(work, i), image: i }));
 }
 
 /** "Title, Year" or just "Title" when year is missing. */
@@ -232,52 +294,54 @@ function compareYearSequence(a: Work, b: Work): number {
   return a.title.localeCompare(b.title);
 }
 
-export function sortWorksForDisplay(list: Work[]): Work[] {
-  const cmp = siteMeta.displayOrder === "year-month"
+export function sortWorksForDisplay(data: WorksData, list: Work[]): Work[] {
+  const cmp = data.siteMeta.displayOrder === "year-month"
     ? compareYearMonth
     : compareYearSequence;
   return [...list].sort(cmp);
 }
 
-export function worksByYear(year: number): Work[] {
-  return sortWorksForDisplay(publishedWorks().filter((w) => w.year === year));
+export function worksByYear(data: WorksData, year: number): Work[] {
+  return sortWorksForDisplay(data, publishedWorks(data).filter((w) => w.year === year));
 }
 
-export function worksByYearRange(min: number, max: number): Work[] {
+export function worksByYearRange(
+  data: WorksData,
+  min: number,
+  max: number
+): Work[] {
   return sortWorksForDisplay(
-    publishedWorks().filter((w) => w.year !== undefined && w.year >= min && w.year <= max)
+    data,
+    publishedWorks(data).filter(
+      (w) => w.year !== undefined && w.year >= min && w.year <= max
+    )
   );
 }
 
-export function worksByTag(tagId: string): Work[] {
-  return sortWorksForDisplay(publishedWorks().filter((w) => w.tags.includes(tagId)));
+export function worksByTag(data: WorksData, tagId: string): Work[] {
+  return sortWorksForDisplay(
+    data,
+    publishedWorks(data).filter((w) => w.tags.includes(tagId))
+  );
 }
 
 /**
- * Flat list of every image flagged for the home carousel, in site display
- * order (year + sequence/month, depending on meta). Each entry knows its
- * parent work so the carousel can link back to the work's detail page.
+ * Flat list of every image flagged for the home carousel, in site
+ * display order. Each entry knows its parent work so the carousel can
+ * link back to the work's detail page.
  */
-export function featuredImages(): Array<{
+export function featuredImages(data: WorksData): Array<{
   work: Work;
   image: WorkImage;
   imagePath: string;
 }> {
   const out: Array<{ work: Work; image: WorkImage; imagePath: string }> = [];
-  for (const w of sortWorksForDisplay(publishedWorks())) {
+  for (const w of sortWorksForDisplay(data, publishedWorks(data))) {
     for (const img of w.images) {
       if (img.featured && img.shown) {
-        out.push({
-          work: w,
-          image: img,
-          imagePath: `/works/${w.slug}/${img.filename}`,
-        });
+        out.push({ work: w, image: img, imagePath: imageUrl(w, img) });
       }
     }
   }
   return out;
-}
-
-export function workBySlug(slug: string): Work | undefined {
-  return works.find((w) => w.slug === slug);
 }

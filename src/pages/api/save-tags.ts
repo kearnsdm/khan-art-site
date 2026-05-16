@@ -1,7 +1,5 @@
 import type { APIRoute } from "astro";
-import { promises as fs } from "node:fs";
-import path from "node:path";
-import { projectRoot } from "../../lib/content-scanner";
+import { META_KEYS, saveMeta } from "../../lib/meta-store";
 
 export const prerender = false;
 
@@ -18,10 +16,6 @@ interface SaveBody {
 const SLUG_RE = /^[a-z0-9][a-z0-9-]*$/;
 const MAX_TAGS = 64;
 
-function tagsJsonPath(): string {
-  return path.join(projectRoot(), "src", "data", "tags.json");
-}
-
 function jsonResponse(payload: unknown, status = 200): Response {
   return new Response(JSON.stringify(payload), {
     status,
@@ -29,6 +23,13 @@ function jsonResponse(payload: unknown, status = 200): Response {
   });
 }
 
+/**
+ * Persist the tag vocabulary to the metadata store. Previously wrote
+ * to `src/data/tags.json` on the local filesystem — which is read-only
+ * inside a Netlify Function and crashed every prod save with EROFS.
+ * Now routes through the shared meta-store so prod and dev both
+ * succeed and the public site picks up changes on the next render.
+ */
 export const POST: APIRoute = async ({ request }) => {
   let body: SaveBody;
   try {
@@ -68,11 +69,13 @@ export const POST: APIRoute = async ({ request }) => {
     clean.push(entry);
   }
 
-  await fs.writeFile(
-    tagsJsonPath(),
-    JSON.stringify({ tags: clean }, null, 2) + "\n",
-    "utf-8"
-  );
+  try {
+    await saveMeta(META_KEYS.tags, { tags: clean });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[api/save-tags] saveMeta failed:", message);
+    return jsonResponse({ error: `storage error: ${message}` }, 500);
+  }
 
   return jsonResponse({ ok: true, count: clean.length });
 };

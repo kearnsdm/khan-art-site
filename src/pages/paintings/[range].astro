@@ -2,37 +2,31 @@
 import Layout from "../../layouts/Layout.astro";
 import WorkCard from "../../components/WorkCard.astro";
 import GalleryControls from "../../components/GalleryControls.astro";
-import { works, sortWorksForDisplay } from "../../data/works";
-import { yearGroups, type YearGroup } from "../../data/year-groups";
+import {
+  loadWorksData,
+  publishedWorks,
+  sortWorksForDisplay,
+} from "../../data/works";
+import { loadYearGroups, yearGroupById } from "../../data/year-groups";
 
-export const prerender = true;
-
-export function getStaticPaths() {
-  return yearGroups.map((group) => ({
-    params: { range: group.id },
-    props: { group },
-  }));
+// SSR: previously this was prerendered with getStaticPaths against the
+// bundled year-groups list. Now we look up the group on each request
+// and filter the latest works payload. Lets Nicholas edit year ranges
+// and have the resulting pages appear without a rebuild.
+const id = Astro.params.range;
+const groups = await loadYearGroups();
+const group = id ? yearGroupById(groups, id) : undefined;
+if (!group) {
+  return new Response("Not found", { status: 404 });
 }
 
-interface Props {
-  group: YearGroup;
-}
-
-const { group } = Astro.props as Props;
-
+const data = await loadWorksData();
 const min = typeof group.minYear === "number" ? group.minYear : Number.NEGATIVE_INFINITY;
 const max = typeof group.maxYear === "number" ? group.maxYear : Number.POSITIVE_INFINITY;
-// Filter to published works only — drafts (published === false) live in
-// works.json for the admin's editing convenience but must never appear
-// on the public site (no images on public/works/, so the cards would
-// just show broken-image squares).
 const list = sortWorksForDisplay(
-  works.filter(
-    (w) =>
-      w.published !== false &&
-      typeof w.year === "number" &&
-      w.year >= min &&
-      w.year <= max
+  data,
+  publishedWorks(data).filter(
+    (w) => typeof w.year === "number" && w.year >= min && w.year <= max
   )
 );
 ---

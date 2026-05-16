@@ -2,22 +2,21 @@
 import Layout from "../../layouts/Layout.astro";
 import WorkCard from "../../components/WorkCard.astro";
 import GalleryControls from "../../components/GalleryControls.astro";
-import { worksByTag } from "../../data/works";
-import { tags } from "../../data/tags";
+import { loadWorksData, worksByTag } from "../../data/works";
+import { loadTags } from "../../data/tags";
 
-// Prerender one page per category at build time so navigation is fast
-// and survives without the SSR adapter being warm.
-export const prerender = true;
-
-export function getStaticPaths() {
-  return tags.map((tag) => ({
-    params: { id: tag.id },
-    props: { tag },
-  }));
+// SSR: the previous getStaticPaths produced one prerendered page per
+// tag at build time. With tags editable at runtime that snapshot can
+// drift, so we look the tag up fresh per request instead.
+const id = Astro.params.id;
+const tags = await loadTags();
+const tag = id ? tags.find((t) => t.id === id) : undefined;
+if (!tag) {
+  return new Response("Not found", { status: 404 });
 }
 
-const { tag } = Astro.props;
-const list = worksByTag(tag.id);
+const data = await loadWorksData();
+const list = worksByTag(data, tag.id);
 ---
 
 <Layout title={`${tag.label} — Nicholas Hart Khan`} currentTagId={tag.id}>

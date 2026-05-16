@@ -1,4 +1,5 @@
-import groupsData from "./year-groups.json";
+import bundledGroupsData from "./year-groups.json";
+import { loadMetaWithFallback, META_KEYS } from "../lib/meta-store";
 
 /**
  * One row under the "Works" group in the side nav. Each YearGroup
@@ -32,6 +33,10 @@ export interface YearGroup {
 interface RawYearGroup {
   minYear?: number;
   maxYear?: number;
+}
+
+interface RawYearGroupsFile {
+  groups: RawYearGroup[];
 }
 
 export function deriveId(g: RawYearGroup): string {
@@ -69,9 +74,9 @@ function isValid(g: RawYearGroup): boolean {
   return typeof g.minYear === "number" || typeof g.maxYear === "number";
 }
 
-export const yearGroups: YearGroup[] = (groupsData.groups as RawYearGroup[])
-  .filter(isValid)
-  .map((g) => ({
+function normalize(raw: RawYearGroupsFile): YearGroup[] {
+  const list = Array.isArray(raw?.groups) ? raw.groups : [];
+  return list.filter(isValid).map((g) => ({
     id: deriveId(g),
     label: deriveLabel(g),
     href: deriveHref(g),
@@ -79,7 +84,16 @@ export const yearGroups: YearGroup[] = (groupsData.groups as RawYearGroup[])
     minYear: typeof g.minYear === "number" ? g.minYear : undefined,
     maxYear: typeof g.maxYear === "number" ? g.maxYear : undefined,
   }));
+}
 
-export function yearGroupById(id: string): YearGroup | undefined {
-  return yearGroups.find((g) => g.id === id);
+export async function loadYearGroups(): Promise<YearGroup[]> {
+  const raw = await loadMetaWithFallback<RawYearGroupsFile>(
+    META_KEYS.yearGroups,
+    bundledGroupsData as unknown as RawYearGroupsFile
+  );
+  return normalize(raw);
+}
+
+export function yearGroupById(groups: YearGroup[], id: string): YearGroup | undefined {
+  return groups.find((g) => g.id === id);
 }

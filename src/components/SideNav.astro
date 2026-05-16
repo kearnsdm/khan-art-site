@@ -1,8 +1,13 @@
 ---
 import { navItems, type SectionId } from "../data/sections";
-import { works, worksByTag, sortWorksForDisplay } from "../data/works";
-import { navTags } from "../data/tags";
-import { yearGroups, type YearGroup } from "../data/year-groups";
+import {
+  loadWorksData,
+  publishedWorks,
+  sortWorksForDisplay,
+  worksByTag,
+} from "../data/works";
+import { loadNavTags } from "../data/tags";
+import { loadYearGroups, type YearGroup } from "../data/year-groups";
 
 interface Props {
   currentSection?: SectionId | null;
@@ -21,6 +26,16 @@ const {
   isWorksHome = false,
 } = Astro.props;
 
+// SideNav lives inside Layout and renders on every page. Three loads
+// happen per render — small and fast (single Blobs reads each), and
+// not cached so Nicholas's edits to works/tags/year-groups all show
+// up immediately.
+const [worksData, navTags, yearGroups] = await Promise.all([
+  loadWorksData(),
+  loadNavTags(),
+  loadYearGroups(),
+]);
+
 function worksInYearGroup(g: YearGroup) {
   const min = typeof g.minYear === "number" ? g.minYear : Number.NEGATIVE_INFINITY;
   const max = typeof g.maxYear === "number" ? g.maxYear : Number.POSITIVE_INFINITY;
@@ -28,12 +43,9 @@ function worksInYearGroup(g: YearGroup) {
   // works.json for editing in the admin but are hidden from the
   // public-facing menu.
   return sortWorksForDisplay(
-    works.filter(
-      (w) =>
-        w.published !== false &&
-        typeof w.year === "number" &&
-        w.year >= min &&
-        w.year <= max
+    worksData,
+    publishedWorks(worksData).filter(
+      (w) => typeof w.year === "number" && w.year >= min && w.year <= max
     )
   );
 }
@@ -138,7 +150,7 @@ const bottomItems = navItems.filter((item) => item.pinBottom);
         Each entry comes from tags.json with inNav=true. */}
     {navTags.map((tag) => {
       const isCurrent = tag.id === currentTagId;
-      const tagWorks = isCurrent ? worksByTag(tag.id) : [];
+      const tagWorks = isCurrent ? worksByTag(worksData, tag.id) : [];
       const subId = `subnav-tag-${tag.id}`;
       return (
         <li class={isCurrent ? "current" : undefined}>

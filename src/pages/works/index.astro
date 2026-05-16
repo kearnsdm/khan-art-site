@@ -2,11 +2,16 @@
 import Layout from "../../layouts/Layout.astro";
 import WorkCard from "../../components/WorkCard.astro";
 import GalleryControls from "../../components/GalleryControls.astro";
-import { works, sortWorksForDisplay } from "../../data/works";
+import {
+  loadWorksData,
+  publishedWorks,
+  sortWorksForDisplay,
+} from "../../data/works";
 
-export const prerender = true;
-
-const list = sortWorksForDisplay(works.filter((w) => w.published !== false));
+// SSR: render the latest works list on each page load. Drops the
+// previous `prerender = true` so Nicholas's saves appear instantly.
+const data = await loadWorksData();
+const list = sortWorksForDisplay(data, publishedWorks(data));
 ---
 
 <Layout title="Works — Nicholas Hart Khan" isWorksHome={true}>

@@ -1,7 +1,5 @@
 import type { APIRoute } from "astro";
-import { promises as fs } from "node:fs";
-import path from "node:path";
-import { projectRoot } from "../../lib/content-scanner";
+import { META_KEYS, saveMeta } from "../../lib/meta-store";
 
 export const prerender = false;
 
@@ -18,10 +16,6 @@ const MAX_GROUPS = 32;
 const MIN_YEAR = 1800;
 const MAX_YEAR = 2200;
 
-function yearGroupsJsonPath(): string {
-  return path.join(projectRoot(), "src", "data", "year-groups.json");
-}
-
 function jsonResponse(payload: unknown, status = 200): Response {
   return new Response(JSON.stringify(payload), {
     status,
@@ -36,6 +30,11 @@ function normalizeYear(input: unknown): number | undefined {
   return n;
 }
 
+/**
+ * Persist year-range definitions. Same migration as save-tags: writes
+ * via the meta-store (Blobs in prod, filesystem in dev) instead of
+ * trying to write to the read-only Lambda bundle.
+ */
 export const POST: APIRoute = async ({ request }) => {
   let body: SaveBody;
   try {
@@ -78,11 +77,13 @@ export const POST: APIRoute = async ({ request }) => {
     clean.push(entry);
   }
 
-  await fs.writeFile(
-    yearGroupsJsonPath(),
-    JSON.stringify({ groups: clean }, null, 2) + "\n",
-    "utf-8"
-  );
+  try {
+    await saveMeta(META_KEYS.yearGroups, { groups: clean });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[api/save-year-groups] saveMeta failed:", message);
+    return jsonResponse({ error: `storage error: ${message}` }, 500);
+  }
 
   return jsonResponse({ ok: true, count: clean.length });
 };

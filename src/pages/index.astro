@@ -1,9 +1,13 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Carousel from "../components/Carousel.astro";
-import { featuredImages } from "../data/works";
+import { loadWorksData, featuredImages } from "../data/works";
 
-const slides = featuredImages();
+// SSR: read the live carousel set on each request so Nicholas's edits
+// take effect immediately. The Blobs read is fast (~50 ms) and the
+// fetched bytes are small.
+const data = await loadWorksData();
+const slides = featuredImages(data);
 ---
 
 <Layout>

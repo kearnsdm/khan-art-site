@@ -1,7 +1,9 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import {
-  works,
+  loadWorksData,
+  publishedWorks,
+  workBySlug,
   primaryImagePath,
   primaryImageAlt,
   detailImages,
@@ -9,16 +11,19 @@ import {
   sortWorksForDisplay,
 } from "../../data/works";
 
-export const prerender = true;
-
-export function getStaticPaths() {
-  // Drafts (published === false) don't get a public URL.
-  return works
-    .filter((work) => work.published !== false)
-    .map((work) => ({ params: { slug: work.slug }, props: { work } }));
+// SSR per-slug. We used to prerender + getStaticPaths from a static
+// works list, which meant new works didn't appear until a rebuild
+// and the data couldn't update at runtime. Now we look the work up
+// fresh on each request.
+const slug = Astro.params.slug;
+const data = await loadWorksData();
+const work = slug ? workBySlug(data, slug) : undefined;
+if (!work || work.published === false) {
+  // Drafts and unknown slugs both yield 404 — the public site never
+  // serves drafts even if you guess the URL.
+  return new Response("Not found", { status: 404 });
 }
 
-const { work } = Astro.props;
 const heroSrc = primaryImagePath(work);
 const heroAlt = primaryImageAlt(work);
 const extras = detailImages(work);
@@ -33,7 +38,7 @@ function statusLabel(s?: string): string {
 // Compute prev/next neighbor URLs in the site's default display order.
 // This lets the zoom view step painting-by-painting without going back
 // to the gallery. Drafts are excluded — only published works are reachable.
-const ordered = sortWorksForDisplay(works.filter((w) => w.published !== false));
+const ordered = sortWorksForDisplay(data, publishedWorks(data));
 const myIdx = ordered.findIndex((w) => w.slug === work.slug);
 const prevWork = myIdx > 0 ? ordered[myIdx - 1] : null;
 const nextWork = myIdx >= 0 && myIdx < ordered.length - 1 ? ordered[myIdx + 1] : null;
