@@ -2093,11 +2093,16 @@ export const prerender = false;
         status.className = ok ? "status success" : "status";
       }
 
-      // Netlify Free / Starter limits request bodies to ~6 MB. After
-      // multipart overhead we have ~5 MB of headroom for the actual
-      // file. Files over this trigger an automatic client-side resize
-      // (Canvas API, runs in Nicholas's browser, free, no server work).
-      const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
+      // Netlify Functions cap incoming request bodies at 6 MB AFTER
+      // base64 encoding. The Lambda runtime base64-wraps the body,
+      // which inflates raw bytes by ~33%. So a 5 MB raw file becomes
+      // ~6.7 MB encoded — over the limit, killed by the gateway with
+      // a generic "Internal Error" before our function ever runs.
+      // 4 MB raw → ~5.3 MB encoded leaves comfortable headroom for
+      // multipart boundary bytes and HTTP headers. Anything bigger
+      // triggers an automatic client-side resize (Canvas API,
+      // browser-local, free, no server work).
+      const MAX_UPLOAD_BYTES = 4 * 1024 * 1024;
       // Target dimensions / quality for the auto-resize. 2400 px on the
       // long side is plenty for "view large" zoom; 85% JPEG is visually
       // indistinguishable from a higher-quality export for photos of

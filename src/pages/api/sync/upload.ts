@@ -4,13 +4,16 @@ import { isPublishable } from "../../../lib/content-scanner";
 
 export const prerender = false;
 
-// Netlify's synchronous function request body limit on the
-// Free / Starter tier is ~6 MB. A multipart upload has overhead on
-// top of the file bytes (boundary markers, the `path` field, headers),
-// so we cap actual file payload at 5 MB to leave headroom. On a paid
-// tier the underlying Netlify limit is ~25 MB — bump this number
-// accordingly if you upgrade.
-const MAX_FILE_BYTES = 5 * 1024 * 1024;
+// Netlify Functions cap incoming request bodies at 6 MB after the
+// Lambda runtime base64-encodes them (~33% inflation). So a raw 5 MB
+// file becomes ~6.7 MB encoded and gets killed by the gateway with a
+// generic "Internal Error" before this handler ever runs. We cap raw
+// file bytes at 4 MB — that lands around 5.4 MB encoded, leaving room
+// for the rest of the multipart body. The browser-side resize uses
+// the same threshold, so anything bigger should arrive already
+// shrunk. On a paid Netlify tier the underlying limit is much
+// higher — bump this if you upgrade.
+const MAX_FILE_BYTES = 4 * 1024 * 1024;
 
 function jsonResponse(payload: unknown, status = 200): Response {
   return new Response(JSON.stringify(payload), {
